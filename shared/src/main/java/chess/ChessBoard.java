@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Arrays;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,9 +9,12 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    private static final int ROWS = 8;
+    private static final int COLS = 8;
+    private ChessPiece[][] board;
 
     public ChessBoard() {
-        
+        board = new ChessPiece[ROWS][COLS];
     }
 
     /**
@@ -19,7 +24,16 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        //Checks to see if it is within the bounds of the board.
+        //need to check more cases. If the position is occupied already. if you can take the opponents piece at that position
+        if (position.getRow() >= 0 && position.getRow() <= ROWS && position.getColumn() >= 0 && position.getColumn() <= COLS){
+            board[position.getRow()][position.getColumn()] = piece;
+        }
+
+    }
+
+    public ChessPiece[][] getBoard() {
+        return board;
     }
 
     /**
@@ -30,7 +44,12 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        //check to see if it is a valid position and return the piece that is there
+        if (position.getRow() >= 0 && position.getRow() <= ROWS && position.getColumn() >= 0 && position.getColumn() <= COLS){
+            return board[position.getRow()][position.getColumn()];
+        }
+        //if no piece at that location, return null
+        return null;
     }
 
     /**
@@ -39,5 +58,25 @@ public class ChessBoard {
      */
     public void resetBoard() {
         throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.deepEquals(board, that.board);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                "board=" + Arrays.deepToString(board) +
+                '}';
     }
 }

@@ -77,7 +77,7 @@ public class ChessPiece {
                         if (atNewPos.getTeamColor() != piece.getTeamColor()) {
                             validMoves.add(new ChessMove(myPosition, newPos, null));
                         }
-                        break;
+                        continue;
                     }
                     validMoves.add(new ChessMove(myPosition, newPos, null));
                 }
@@ -150,7 +150,7 @@ public class ChessPiece {
                         if (atNewPos.getTeamColor() != piece.getTeamColor()) {
                             validMoves.add(new ChessMove(myPosition, newPos, null));
                         }
-                        break;
+                        continue;
                     }
                     validMoves.add(new ChessMove(myPosition, newPos, null));
                 }

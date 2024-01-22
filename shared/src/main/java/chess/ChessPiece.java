@@ -63,12 +63,12 @@ public class ChessPiece {
             case KING: {
                 int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
                 for (int i = 0; i < directions.length; i++) {
-                    int x = myPosition.getColumn();
-                    int y = myPosition.getRow();
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
                     int[] direction = directions[i];
-                    x += direction[0];
-                    y += direction[1];
-                    ChessPosition newPos = new ChessPosition(x, y);
+                    row += direction[0];
+                    col += direction[1];
+                    ChessPosition newPos = new ChessPosition(row, col);
                     if (!board.isValidPos(newPos)) {
                         continue;
                     }
@@ -86,13 +86,13 @@ public class ChessPiece {
             case QUEEN:{
                 int[][] directions = new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}, {0, 1}, {0, -1}, {1, 0}, {-1, 0}};
                 for (int i = 0; i < directions.length; i++) {
-                    int x = myPosition.getColumn();
-                    int y = myPosition.getRow();
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
                     int[] direction = directions[i];
                     while (true) {
-                        x += direction[0];
-                        y += direction[1];
-                        ChessPosition newPos = new ChessPosition(x, y);
+                        row += direction[0];
+                        col += direction[1];
+                        ChessPosition newPos = new ChessPosition(row, col);
                         if (!board.isValidPos(newPos)) {
                             break;
                         }
@@ -192,8 +192,8 @@ public class ChessPiece {
                 if (board.isValidPos(oneStep) && board.getPiece(oneStep) == null){
                     validMoves.add(new ChessMove(myPosition, oneStep, null));
 
-                    if (y == startRow){
-                        ChessPosition twoStep = new ChessPosition(row, col+direction+1);
+                    if (row == startRow){
+                        ChessPosition twoStep = new ChessPosition(row + direction + 1, col);
                         if (board.isValidPos(twoStep) && board.getPiece(twoStep) == null){
                             validMoves.add(new ChessMove(myPosition, twoStep, null));
                         }
@@ -203,7 +203,7 @@ public class ChessPiece {
                 //check if capture is available
                 int[] captureOffests = {-1, 1};
                 for (int offset : captureOffests){
-                    ChessPosition capturePos = new ChessPosition(x + offset, y + direction);
+                    ChessPosition capturePos = new ChessPosition(row + direction, col + offset);
                     if (board.isValidPos(capturePos)){
                         ChessPiece atCapPos = board.getPiece(capturePos);
                         if (atCapPos != null && atCapPos.getTeamColor() != piece.getTeamColor()){

@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -110,13 +111,13 @@ public class ChessPiece {
             case BISHOP:{
                 int[][] directions = new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
                 for (int i = 0; i < directions.length; i++) {
-                    int x = myPosition.getColumn();
-                    int y = myPosition.getRow();
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
                     int[] direction = directions[i];
                     while (true) {
-                        x += direction[0];
-                        y += direction[1];
-                        ChessPosition newPos = new ChessPosition(x, y);
+                        row += direction[0];
+                        col += direction[1];
+                        ChessPosition newPos = new ChessPosition(row, col);
                         if (!board.isValidPos(newPos)) {
                             break;
                         }
@@ -135,12 +136,12 @@ public class ChessPiece {
             case KNIGHT:{
                 int[][] directions = new int[][]{{-2, -1}, {-2, 1}, {2, -1}, {2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}};
                 for (int i = 0; i < directions.length; i++) {
-                    int x = myPosition.getColumn();
-                    int y = myPosition.getRow();
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
                     int[] direction = directions[i];
-                    x += direction[0];
-                    y += direction[1];
-                    ChessPosition newPos = new ChessPosition(x, y);
+                    row += direction[0];
+                    col += direction[1];
+                    ChessPosition newPos = new ChessPosition(row, col);
                     if (!board.isValidPos(newPos)) {
                         continue;
                     }
@@ -184,15 +185,15 @@ public class ChessPiece {
             case PAWN:{
                 int direction = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? -1 : 1;
                 int startRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 6 : 1;
-                int x = myPosition.getColumn();
-                int y = myPosition.getRow();
+                int row = myPosition.getRow();
+                int col = myPosition.getColumn();
 
-                ChessPosition oneStep = new ChessPosition(x, y+direction);
+                ChessPosition oneStep = new ChessPosition(row, col+direction);
                 if (board.isValidPos(oneStep) && board.getPiece(oneStep) == null){
                     validMoves.add(new ChessMove(myPosition, oneStep, null));
 
                     if (y == startRow){
-                        ChessPosition twoStep = new ChessPosition(x, y+direction+1);
+                        ChessPosition twoStep = new ChessPosition(row, col+direction+1);
                         if (board.isValidPos(twoStep) && board.getPiece(twoStep) == null){
                             validMoves.add(new ChessMove(myPosition, twoStep, null));
                         }
@@ -215,5 +216,26 @@ public class ChessPiece {
         }
         return validMoves;
         }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+}
 

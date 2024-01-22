@@ -26,8 +26,8 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         //Checks to see if it is within the bounds of the board.
         //need to check more cases. If the position is occupied already. if you can take the opponents piece at that position
-        if (position.getRow() >= 0 && position.getRow() < ROWS && position.getColumn() >= 0 && position.getColumn() < COLS){
-            board[position.getRow()][position.getColumn()] = piece;
+        if (position.getRow() > 0 && position.getRow() <= ROWS && position.getColumn() > 0 && position.getColumn() <= COLS){
+            board[position.getRow() - 1][position.getColumn() - 1] = piece;
         }
 
     }
@@ -46,14 +46,14 @@ public class ChessBoard {
     public ChessPiece getPiece(ChessPosition position) {
         //check to see if it is a valid position and return the piece that is there
         if (isValidPos(position)){
-            return board[position.getRow()][position.getColumn()];
+            return board[position.getRow() - 1][position.getColumn() - 1];
         }
         //if no piece at that location, return null
         return null;
     }
 
     public boolean isValidPos(ChessPosition position){
-        if((position.getColumn() < 0 || position.getColumn() >= COLS) || (position.getRow() < 0 || position.getRow() >= ROWS)){
+        if((position.getColumn() < 1 || position.getColumn() > COLS) || (position.getRow() < 1 || position.getRow() > ROWS)){
             return false;
         }
         else {
@@ -100,39 +100,39 @@ public class ChessBoard {
         ChessPiece whiteKing =  new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
         ChessPiece blackKing =  new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
 
-        addPiece(new ChessPosition(0,0), blackRook0);
-        addPiece(new ChessPosition(1,0), blackKnight0);
-        addPiece(new ChessPosition(2,0), blackBishop0);
-        addPiece(new ChessPosition(3,0), blackKing);
-        addPiece(new ChessPosition(4,0), blackQueen);
-        addPiece(new ChessPosition(5,0), blackBishop1);
-        addPiece(new ChessPosition(6,0), blackKnight1);
-        addPiece(new ChessPosition(7,0), blackRook1);
-        addPiece(new ChessPosition(0,1), blackPawn0);
-        addPiece(new ChessPosition(1,1), blackPawn1);
-        addPiece(new ChessPosition(2,1), blackPawn2);
-        addPiece(new ChessPosition(3,1), blackPawn3);
-        addPiece(new ChessPosition(4,1), blackPawn4);
-        addPiece(new ChessPosition(5,1), blackPawn5);
-        addPiece(new ChessPosition(6,1), blackPawn6);
-        addPiece(new ChessPosition(7,1), blackPawn7);
+        addPiece(new ChessPosition(8,1), blackRook0);
+        addPiece(new ChessPosition(8,2), blackKnight0);
+        addPiece(new ChessPosition(8,3), blackBishop0);
+        addPiece(new ChessPosition(8,5), blackKing);
+        addPiece(new ChessPosition(8,4), blackQueen);
+        addPiece(new ChessPosition(8,6), blackBishop1);
+        addPiece(new ChessPosition(8,7), blackKnight1);
+        addPiece(new ChessPosition(8,8), blackRook1);
+        addPiece(new ChessPosition(7,1), blackPawn0);
+        addPiece(new ChessPosition(7,2), blackPawn1);
+        addPiece(new ChessPosition(7,3), blackPawn2);
+        addPiece(new ChessPosition(7,4), blackPawn3);
+        addPiece(new ChessPosition(7,5), blackPawn4);
+        addPiece(new ChessPosition(7,6), blackPawn5);
+        addPiece(new ChessPosition(7,7), blackPawn6);
+        addPiece(new ChessPosition(7,8), blackPawn7);
 
-        addPiece(new ChessPosition(0,7), whiteRook0);
-        addPiece(new ChessPosition(1,7), whiteKnight0);
-        addPiece(new ChessPosition(2,7), whiteBishop0);
-        addPiece(new ChessPosition(3,7), whiteKing);
-        addPiece(new ChessPosition(4,7), whiteQueen);
-        addPiece(new ChessPosition(5,7), whiteBishop1);
-        addPiece(new ChessPosition(6,7), whiteKnight1);
-        addPiece(new ChessPosition(7,7), whiteRook1);
-        addPiece(new ChessPosition(0,6), whitePawn0);
-        addPiece(new ChessPosition(1,6), whitePawn1);
-        addPiece(new ChessPosition(2,6), whitePawn2);
-        addPiece(new ChessPosition(3,6), whitePawn3);
-        addPiece(new ChessPosition(4,6), whitePawn4);
-        addPiece(new ChessPosition(5,6), whitePawn5);
-        addPiece(new ChessPosition(6,6), whitePawn6);
-        addPiece(new ChessPosition(7,6), whitePawn7);
+        addPiece(new ChessPosition(1,1), whiteRook0);
+        addPiece(new ChessPosition(1,2), whiteKnight0);
+        addPiece(new ChessPosition(1,3), whiteBishop0);
+        addPiece(new ChessPosition(1,5), whiteKing);
+        addPiece(new ChessPosition(1,4), whiteQueen);
+        addPiece(new ChessPosition(1,6), whiteBishop1);
+        addPiece(new ChessPosition(1,7), whiteKnight1);
+        addPiece(new ChessPosition(1,8), whiteRook1);
+        addPiece(new ChessPosition(2,1), whitePawn0);
+        addPiece(new ChessPosition(2,2), whitePawn1);
+        addPiece(new ChessPosition(2,3), whitePawn2);
+        addPiece(new ChessPosition(2,4), whitePawn3);
+        addPiece(new ChessPosition(2,5), whitePawn4);
+        addPiece(new ChessPosition(2,6), whitePawn5);
+        addPiece(new ChessPosition(2,7), whitePawn6);
+        addPiece(new ChessPosition(2,8), whitePawn7);
 
     }
 

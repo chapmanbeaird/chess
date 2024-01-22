@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Objects;
 
 /**
@@ -55,7 +56,7 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ChessPiece piece = board.getPiece(myPosition);
-        Collection<ChessMove> validMoves = new ArrayList<>();
+        Collection<ChessMove> validMoves = new HashSet<>();
         if (piece == null) {
             return validMoves;
         }
@@ -183,17 +184,25 @@ public class ChessPiece {
                 break;
             }
             case PAWN:{
-                int direction = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? -1 : 1;
-                int startRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 6 : 1;
+                int direction = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 1 : -1;
+                int startRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 2 : 7;
+                int promotionRow = (piece.getTeamColor() == ChessGame.TeamColor.WHITE) ? 8 : 1;
                 int row = myPosition.getRow();
                 int col = myPosition.getColumn();
+                ChessPiece.PieceType[] promotionPieces = {PieceType.BISHOP, PieceType.KNIGHT, PieceType.ROOK, PieceType.QUEEN};
 
-                ChessPosition oneStep = new ChessPosition(row, col+direction);
+                ChessPosition oneStep = new ChessPosition(row + direction, col);
                 if (board.isValidPos(oneStep) && board.getPiece(oneStep) == null){
-                    validMoves.add(new ChessMove(myPosition, oneStep, null));
-
+                    if (oneStep.getRow() == promotionRow){
+                        for (ChessPiece.PieceType promotionPiece : promotionPieces){
+                            validMoves.add(new ChessMove(myPosition, oneStep, promotionPiece));
+                        }
+                    }
+                    else {
+                        validMoves.add(new ChessMove(myPosition, oneStep, null));
+                    }
                     if (row == startRow){
-                        ChessPosition twoStep = new ChessPosition(row + direction + 1, col);
+                        ChessPosition twoStep = new ChessPosition(row + direction * 2, col);
                         if (board.isValidPos(twoStep) && board.getPiece(twoStep) == null){
                             validMoves.add(new ChessMove(myPosition, twoStep, null));
                         }
@@ -207,7 +216,14 @@ public class ChessPiece {
                     if (board.isValidPos(capturePos)){
                         ChessPiece atCapPos = board.getPiece(capturePos);
                         if (atCapPos != null && atCapPos.getTeamColor() != piece.getTeamColor()){
+                            if (capturePos.getRow() == promotionRow){
+                                for (ChessPiece.PieceType promotionPiece : promotionPieces){
+                                    validMoves.add(new ChessMove(myPosition, capturePos, promotionPiece));
+                                }
+                            }
+                            else{
                             validMoves.add(new ChessMove(myPosition, capturePos, null));
+                            }
                         }
                     }
                 }

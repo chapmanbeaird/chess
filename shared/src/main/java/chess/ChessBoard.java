@@ -45,7 +45,7 @@ public class ChessBoard {
      */
     public ChessPiece getPiece(ChessPosition position) {
         //check to see if it is a valid position and return the piece that is there
-        if (position.getRow() >= 0 && position.getRow() <= ROWS && position.getColumn() >= 0 && position.getColumn() <= COLS){
+        if (isValidPos(position)){
             return board[position.getRow()][position.getColumn()];
         }
         //if no piece at that location, return null
@@ -53,7 +53,7 @@ public class ChessBoard {
     }
 
     public boolean isValidPos(ChessPosition position){
-        if((position.getColumn() < 0 || position.getColumn() > 7) || (position.getRow() < 0 || position.getRow() > 7)){
+        if((position.getColumn() < 0 || position.getColumn() >= COLS) || (position.getRow() < 0 || position.getRow() >= ROWS)){
             return false;
         }
         else {
@@ -134,38 +134,12 @@ public class ChessBoard {
         addPiece(new ChessPosition(6,6), whitePawn6);
         addPiece(new ChessPosition(7,6), whitePawn7);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     public void clear(){
         for (int i = 0; i < ROWS; i++){
             for (int j = 0; j < COLS; j++){
                 board[i][j] = null;
-
             }
         }
     }

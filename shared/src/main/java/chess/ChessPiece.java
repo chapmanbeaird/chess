@@ -11,7 +11,7 @@ import java.util.Collection;
  */
 public class ChessPiece {
     private ChessGame.TeamColor pieceColor;
-    private PieceType type;
+    private ChessPiece.PieceType type;
 
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
@@ -157,15 +157,15 @@ public class ChessPiece {
             }
 
             case ROOK: {
-                int[][] directions = new int[][]{{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+                int[][] directions = new int[][]{{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
                 for (int i = 0; i < directions.length; i++) {
-                    int x = myPosition.getColumn();
-                    int y = myPosition.getRow();
+                    int row = myPosition.getRow();
+                    int col = myPosition.getColumn();
                     int[] direction = directions[i];
                     while (true) {
-                        x += direction[0];
-                        y += direction[1];
-                        ChessPosition newPos = new ChessPosition(x, y);
+                        row += direction[0];
+                        col += direction[1];
+                        ChessPosition newPos = new ChessPosition(row, col);
                         if (!board.isValidPos(newPos)) {
                             break;
                         }
@@ -213,7 +213,7 @@ public class ChessPiece {
                 break;
             }
         }
-        return null;
+        return validMoves;
         }
     }
 

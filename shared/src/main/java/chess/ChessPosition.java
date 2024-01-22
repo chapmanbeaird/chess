@@ -13,7 +13,7 @@ public class ChessPosition {
     private int col;
 
 
-    public ChessPosition(int row, int col) {
+    public ChessPosition(int col, int row) {
         this.row = row;
         this.col = col;
     }
@@ -33,6 +33,7 @@ public class ChessPosition {
     public int getColumn() {
         return col;
     }
+
 
     @Override
     public boolean equals(Object o) {

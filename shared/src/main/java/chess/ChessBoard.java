@@ -26,7 +26,7 @@ public class ChessBoard {
     public void addPiece(ChessPosition position, ChessPiece piece) {
         //Checks to see if it is within the bounds of the board.
         //need to check more cases. If the position is occupied already. if you can take the opponents piece at that position
-        if (position.getRow() >= 0 && position.getRow() <= ROWS && position.getColumn() >= 0 && position.getColumn() <= COLS){
+        if (position.getRow() >= 0 && position.getRow() < ROWS && position.getColumn() >= 0 && position.getColumn() < COLS){
             board[position.getRow()][position.getColumn()] = piece;
         }
 
@@ -51,6 +51,15 @@ public class ChessBoard {
         //if no piece at that location, return null
         return null;
     }
+
+    public boolean isValidPos(ChessPosition position){
+        if((position.getColumn() < 0 || position.getColumn() > 7) || (position.getRow() < 0 || position.getRow() > 7)){
+            return false;
+        }
+        else {
+            return true;
+        }
+    };
 
     /**
      * Sets the board to the default starting board

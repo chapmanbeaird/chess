@@ -8,6 +8,7 @@ import java.util.Arrays;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
+//test
 public class ChessBoard {
     private static final int ROWS = 8;
     private static final int COLS = 8;

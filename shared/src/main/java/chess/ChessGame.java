@@ -69,12 +69,22 @@ public class ChessGame {
         Collection<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> validMoves = new HashSet<>();
         for (ChessMove move : possibleMoves){
-            ChessBoard originalBoard = new ChessBoard(board);
+            ChessBoard originalBoard = new ChessBoard(this.board);
+            try {
+                makeMove(move);
 
-
+                if (!isInCheck(piece.getTeamColor())){
+                    validMoves.add(move);
+                }
+            }
+            catch (InvalidMoveException e) {
+                throw new RuntimeException(e);
+            }
+            finally {
+                this.board = originalBoard;
+            }
         }
-
-        return null;
+        return validMoves;
     }
 
     /**
@@ -84,7 +94,19 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPosition startPos = move.getStartPosition();
+        ChessPosition endPos = move.getEndPosition();
+        ChessPiece.PieceType promPiece = move.getPromotionPiece();
+        ChessPiece piece = board.getPiece(startPos);
+
+        if (!validMoves(startPos).contains(move)){
+            throw new InvalidMoveException("move is not a valid move");
+        }
+
+        board.addPiece(endPos, piece);
+        board.addPiece(startPos, null);
+
+        currTeamTurn = (currTeamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }
 
     /**

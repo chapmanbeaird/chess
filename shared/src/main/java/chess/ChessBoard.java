@@ -145,6 +145,19 @@ public class ChessBoard {
         }
     }
 
+    //deep copy constructor
+    public ChessBoard(ChessBoard otherBoard) {
+        this.board = new ChessPiece[ROWS][COLS];
+        for (int i = 0 ; i < ROWS ; i++){
+            for (int j = 0 ; j < COLS ; j++){
+                ChessPiece piece = otherBoard.board[i][j];
+                if (piece != null) {
+                    this.board[i][j] = piece;
+                }
+            }
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -116,7 +116,20 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        ChessPosition kingPos = getKingPosition(teamColor);
+        TeamColor oppColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
+        for (int row = 0 ; row < 8 ; row++){
+            for (int col = 0 ; col < 8 ; col++){
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece != null && piece.getTeamColor() == teamColor){
+                    if (validMoves(pos).contains(new ChessMove(pos, kingPos, null))){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -139,6 +152,20 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         throw new RuntimeException("Not implemented");
     }
+
+    public ChessPosition getKingPosition(TeamColor teamColor){
+        for (int row = 0 ; row < 8 ; row++){
+            for (int col = 0 ; col < 8 ; col++){
+                ChessPosition pos = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(pos);
+                if (piece != null && piece.getTeamColor() == teamColor && piece.getPieceType() == ChessPiece.PieceType.KING){
+                    return pos;
+                }
+            }
+        }
+        throw new IllegalStateException("king not found");
+    }
+
 
     /**
      * Sets this game's chessboard with a given board

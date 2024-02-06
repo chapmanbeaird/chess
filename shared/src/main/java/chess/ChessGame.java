@@ -187,8 +187,8 @@ public class ChessGame {
         ChessPosition kingPos = (teamColor == TeamColor.WHITE) ? whiteKingPosition : blackKingPosition;
 
         TeamColor oppColor = (teamColor == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
-        for (int row = 0 ; row < 8 ; row++){
-            for (int col = 0 ; col < 8 ; col++){
+        for (int row = 1 ; row <= 8 ; row++){
+            for (int col = 1 ; col <= 8 ; col++){
                 ChessPosition pos = new ChessPosition(row, col);
                 ChessPiece piece = board.getPiece(pos);
 
@@ -215,29 +215,17 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        if (!isInCheck(teamColor)){
+        if (!isInCheck(teamColor)) {
             return false;
         }
         ChessPosition kingPos = (teamColor == TeamColor.WHITE) ? whiteKingPosition : blackKingPosition;
         Collection<ChessMove> kingMoves = validMoves(kingPos);
 
-        for (ChessMove move : kingMoves){
-            ChessBoard originalBoard = new ChessBoard(this.board);
-
-            try {
-                makeMove(move);
-                if(!isInCheck(teamColor)){
-                    this.board = originalBoard;
-                    return false;
-                }
-            }
-            catch (InvalidMoveException e) {
-            }
-            finally {
-                this.board = originalBoard;
-            }
+        if (kingMoves.size() == 0) {
+            return true;
+        } else {
+            return false;
         }
-        return true;
     }
 
     /**

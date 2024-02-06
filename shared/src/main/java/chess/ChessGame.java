@@ -117,10 +117,23 @@ public class ChessGame {
             }
         }
 
-        //move the piece
-        board.addPiece(endPos, piece);
-        board.addPiece(startPos, null);
-
+        //check if it's a white pawn moving to the last row
+        if (piece.getTeamColor() == TeamColor.WHITE && piece.getPieceType() == ChessPiece.PieceType.PAWN && endPos.getRow() == 8){
+            //move the piece
+            board.addPiece(endPos, new ChessPiece(piece.getTeamColor(), promPiece));
+            board.addPiece(startPos, null);
+        }
+        //check if it's a black pawn moving to the last row
+        else if (piece.getTeamColor() == TeamColor.BLACK && piece.getPieceType() == ChessPiece.PieceType.PAWN && endPos.getRow() == 1){
+            //move the piece
+            board.addPiece(endPos, new ChessPiece(piece.getTeamColor(), promPiece));
+            board.addPiece(startPos, null);
+        }
+        else {
+            //move the piece if not a promotion
+            board.addPiece(endPos, piece);
+            board.addPiece(startPos, null);
+        }
         //reset the team turn
         currTeamTurn = (currTeamTurn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
     }

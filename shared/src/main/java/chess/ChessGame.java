@@ -18,7 +18,7 @@ public class ChessGame {
 
     public ChessGame() {
         this.board = new ChessBoard();
-        setTeamTurn(getTeamTurn());
+        setTeamTurn(TeamColor.WHITE);
         getKingPositions();
 
     }
@@ -65,6 +65,7 @@ public class ChessGame {
         int row = startPosition.getRow();
         int col = startPosition.getColumn();
         ChessPiece piece = board.getPiece(startPosition);
+        currTeamTurn = piece.getTeamColor();
         if (piece == null){
             return null;
         }

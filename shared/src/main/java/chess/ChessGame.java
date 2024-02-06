@@ -10,7 +10,7 @@ import java.util.HashSet;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor currTeamTurn = TeamColor.WHITE;
+    private TeamColor currTeamTurn;
     private ChessBoard board;
 
     private ChessPosition whiteKingPosition;
@@ -18,7 +18,7 @@ public class ChessGame {
 
     public ChessGame() {
         this.board = new ChessBoard();
-        this.currTeamTurn = TeamColor.WHITE;
+        setTeamTurn(getTeamTurn());
         getKingPositions();
 
     }

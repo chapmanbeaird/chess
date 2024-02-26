@@ -18,21 +18,5 @@ public class Main {
         System.out.println("♕ 240 Chess Server: " + piece);
         Server server = new Server();
         server.run(8080);
-//
-//        // Start the server
-//        port(8080);
-//
-//        UserDAO userDataAccess = new UserDAO();
-//        GameDAO gameDataAccess = new GameDAO();
-//        AuthDAO authDataAccess = new AuthDAO();
-//
-//        // Initialize services
-//        ClearService clearService = new ClearService(userDataAccess, gameDataAccess, authDataAccess);
-//
-//        // Initialize handlers
-//        ClearHandler clearHandler = new ClearHandler(clearService, new Gson());
-//
-//        // Setup routes
-//        clearHandler.setupRoutes();
     }
 }

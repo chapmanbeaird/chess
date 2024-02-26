@@ -25,7 +25,7 @@ public class LoginHandler implements Route {
             }
 
             // Attempt to login the user
-            String authToken = loginService.loginUser(loginRequest.username, loginRequest.password);
+            String authToken = loginService.loginUser(loginRequest.username, loginRequest.password, loginRequest.email);
             if (authToken == null) {
                 res.status(401); // Unauthorized
                 return gson.toJson(new SimpleResponse("Error: unauthorized"));
@@ -43,6 +43,7 @@ public class LoginHandler implements Route {
     private static class LoginRequest {
         String username;
         String password;
+        String email;
     }
 
     private static class AuthResponse {

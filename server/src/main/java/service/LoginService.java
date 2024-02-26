@@ -16,11 +16,17 @@ public class LoginService {
         this.authDAO = authDAO;
     }
 
-    public String loginUser(String username, String password) throws DataAccessException {
+    public String loginUser(String username, String password, String email) throws DataAccessException {
         // Check if user exists and password matches
         UserData user = userDAO.getUser(username);
-        if (user == null || !user.password().equals(password)) {
-            return null; // User not found or password does not match
+
+        if (user == null) {
+            // User does not exist, create a new user
+            user = new UserData(username, password, email);
+            userDAO.createUser(user);
+        } else if (!user.password().equals(password)) {
+            // User exists, but password does not match
+            return null;
         }
 
         // Generate a new authToken

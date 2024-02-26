@@ -16,11 +16,7 @@ public class UserDAO {
     }
 
     public UserData getUser(String username) throws DataAccessException {
-        if (!users.containsKey(username)){
-            throw new DataAccessException("Username does not exist");
-        }
-        UserData user = users.get(username);
-        return user;
+        return users.get(username);
     }
 
     public boolean isEmpty(){

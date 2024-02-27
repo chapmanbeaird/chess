@@ -36,12 +36,12 @@ public class JoinGameService {
             if (game.whiteUsername() != null) {
                 throw new DataAccessException("White player spot already taken.");
             }
-            updatedGame = new GameData(game.gameID(), authToken, game.blackUsername(), game.gameName(), game.game());
+            updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
         } else if ("BLACK".equals(playerColor)) {
             if (game.blackUsername() != null) {
                 throw new DataAccessException("Black player spot already taken.");
             }
-            updatedGame = new GameData(game.gameID(), game.whiteUsername(), authToken, game.gameName(), game.game());
+            updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
         } else {
             // Handle the case for joining as an observer
             return;

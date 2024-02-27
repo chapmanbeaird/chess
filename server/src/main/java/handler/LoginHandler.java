@@ -25,7 +25,7 @@ public class LoginHandler implements Route {
             }
 
             // Attempt to login the user
-            String authToken = loginService.loginUser(loginRequest.username, loginRequest.password, loginRequest.email);
+            String authToken = loginService.loginUser(loginRequest.username, loginRequest.password);
             if (authToken == null) {
                 res.status(401); // Unauthorized
                 return gson.toJson(new SimpleResponse("Error: unauthorized"));

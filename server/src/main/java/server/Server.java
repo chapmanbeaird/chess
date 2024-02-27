@@ -38,7 +38,7 @@ public class Server {
 
     private void setupRoutes(Gson gson, UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
         ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
-        RegisterService registerService = new RegisterService(userDAO);
+        RegisterService registerService = new RegisterService(userDAO, authDAO);
         CreateGameService createGameService = new CreateGameService(gameDAO);
         JoinGameService joinGameService = new JoinGameService(gameDAO, authDAO);
         LoginService loginService = new LoginService(userDAO, authDAO);

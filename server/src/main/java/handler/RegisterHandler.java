@@ -27,10 +27,9 @@ public class RegisterHandler implements Route {
                 return gson.toJson(new SimpleResponse("Error: bad request"));
             }
 
-            boolean success = registerService.registerUser(userData);
+            String authToken = registerService.registerUser(userData);
 
-            if (success) {
-                String authToken = registerService.generateAuthToken();
+            if (authToken != null) {
                 response.status(200);
                 return gson.toJson(new RegistrationResult(userData.username(), authToken));
             } else {

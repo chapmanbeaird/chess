@@ -26,7 +26,7 @@ public class CreateGameTest {
         String creatorUsername = "User123";
 
 
-        GameData createdGame = createGameService.createGame(gameName, creatorUsername);
+        GameData createdGame = createGameService.createGame(gameName);
 
 
         assertNotNull(createdGame); //make sure game exists
@@ -47,7 +47,7 @@ public class CreateGameTest {
 
         // make sure it throws an error
         assertThrows(DataAccessException.class, () -> {
-            createGameService.createGame(gameName, "NewUser");
+            createGameService.createGame(gameName);
         }, "Creating a game with an existing name should throw DataAccessException");
     }
 }

@@ -13,13 +13,13 @@ public class CreateGameService {
         this.gameDAO = gameDAO;
     }
 
-    public GameData createGame(String gameName, String creatorUsername) throws DataAccessException {
+    public GameData createGame(String gameName) throws DataAccessException {
         if (gameDAO.gameNameExists(gameName)){
             throw new DataAccessException("Game name already taken");
         }
 
         int gameId = generateGameId();
-        GameData newGame = new GameData(gameId, creatorUsername, null, gameName, null);
+        GameData newGame = new GameData(gameId, null, null, gameName, null);
 
         gameDAO.createGame(newGame);
         return newGame;

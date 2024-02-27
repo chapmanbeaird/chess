@@ -17,10 +17,10 @@ public class LogoutHandler implements Route {
     }
 
     @Override
-    public Object handle(Request req, Response res) throws Exception {
+    public Object handle(Request req, Response res) throws DataAccessException {
         try {
             // Extract the authToken from the request header
-            String authToken = req.headers("authorization");
+            String authToken = req.headers("Authorization");
             if (authToken == null || authToken.isEmpty()) {
                 res.status(400); // Bad Request
                 return gson.toJson(new SimpleResponse("Error: invalid request"));

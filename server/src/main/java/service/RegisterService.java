@@ -1,7 +1,9 @@
 package service;
 
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
+import model.AuthData;
 import model.UserData;
 import org.eclipse.jetty.server.Authentication;
 
@@ -9,9 +11,11 @@ import java.util.UUID;
 
 public class RegisterService {
     private UserDAO userDAO;
+    private AuthDAO authDAO;
 
-    public RegisterService(UserDAO userDAO) {
+    public RegisterService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
+        this.authDAO = authDAO;
     }
 
     public static String generateAuthToken() {
@@ -21,25 +25,28 @@ public class RegisterService {
     }
 
 
-    public boolean registerUser(UserData userData) throws DataAccessException {
+    public String registerUser(UserData userData) throws DataAccessException {
         // Validate user data
         if (userData == null || userData.username() == null || userData.password() == null || userData.email() == null) {
-            return false;
+            return null;
         }
 
         // Check if the username is already taken
         if (userDAO.isUsernameUsed(userData.username())) {
-            return false;
+            return null;
         }
 
         // Check if email is already used
          if (userDAO.isEmailUsed(userData.email())) {
-             return false;
+             return null;
          }
 
-        // Store the user in the database
+        // Store the user and authToken in the database
+        String authToken = generateAuthToken();
+        AuthData authData = new AuthData(authToken, userData.username());
+        authDAO.createAuthToken(authData);
         userDAO.createUser(userData);
-        return true;
+        return authToken;
     }
 
 }

@@ -64,7 +64,7 @@ public class Server {
         delete("/session", new LogoutHandler(logoutService, gson, authDAO));
 
         //List Games
-        get("/game", new ListGamesHandler(listGamesService, gson));
+        get("/game", new ListGamesHandler(listGamesService, gson, authDAO));
     }
 
     public void stop() {

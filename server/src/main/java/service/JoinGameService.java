@@ -29,11 +29,6 @@ public class JoinGameService {
             throw new IllegalArgumentException("No user found with provided authtoken");
         }
 
-        // Check if the player is already in the game
-        if (isPlayerAlreadyInGame(game, username)) {
-            throw new DataAccessException("Player already in this game.");
-        }
-
         // Logic to add player to the game based on playerColor
         GameData updatedGame;
         if ("WHITE".equals(playerColor)) {
@@ -52,9 +47,5 @@ public class JoinGameService {
         }
 
         gameDAO.updateGame(gameId, updatedGame); // Update the game
-    }
-
-    private boolean isPlayerAlreadyInGame(GameData game, String username) {
-        return username.equals(game.whiteUsername()) || username.equals(game.blackUsername());
     }
 }

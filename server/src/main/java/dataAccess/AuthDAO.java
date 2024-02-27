@@ -13,18 +13,15 @@ public class AuthDAO {
         authTokens.put(authToken.authToken(), authToken);
     }
 
-    public AuthData getAuthToken(String token) throws DataAccessException {
-        if (!authTokens.containsKey(token)){
-            throw new DataAccessException("AuthToken does not exist");
-        }
+    public AuthData getAuthToken(String token){
         AuthData authData = authTokens.get(token);
         return authData;
     }
 
-    public String getUsername(String token) throws DataAccessException {
+    public String getUsername(String token) {
         AuthData authData = authTokens.get(token);
-        if (authData == null) {
-            throw new DataAccessException("AuthToken does not exist");
+        if (authData == null || authData.username() == null){
+            return null;
         }
         return authData.username();
     }

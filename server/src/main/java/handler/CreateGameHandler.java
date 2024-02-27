@@ -1,6 +1,8 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataAccess.AuthDAO;
+import model.AuthData;
 import service.CreateGameService;
 import spark.Request;
 import spark.Response;
@@ -10,19 +12,23 @@ import model.GameData;
 public class CreateGameHandler implements Route {
     private CreateGameService createGameService;
     private Gson gson;
+    private AuthDAO authDAO;
 
-    public CreateGameHandler(CreateGameService createGameService, Gson gson) {
+    public CreateGameHandler(CreateGameService createGameService, Gson gson, AuthDAO authDAO) {
         this.createGameService = createGameService;
         this.gson = gson;
+        this.authDAO = authDAO;
     }
 
     public Object handle(Request req, Response res) {
         try {
-            // Authorization check
-            String authToken = req.headers("authorization");
-            if (authToken == null || authToken.isEmpty()) {
-                res.status(401);
-                return gson.toJson(new SimpleResponse("Error: unauthorized"));
+
+            // Extract the authToken from the database and req header
+            String reqAuthToken = req.headers("Authorization");
+            AuthData DAOAuthData = authDAO.getAuthToken(reqAuthToken);
+            if (DAOAuthData == null || DAOAuthData.authToken() == null) {
+                res.status(401); // Unauthorized
+                return gson.toJson(new CreateGameHandler.SimpleResponse("Error: unauthorized"));
             }
 
             // Extract game creation details from request body
@@ -54,5 +60,12 @@ public class CreateGameHandler implements Route {
 
     private static class CreateGameRequest {
         private String gameName;
+    }
+    private static class SimpleResponse {
+        String message;
+
+        public SimpleResponse(String message) {
+            this.message = message;
+        }
     }
 }

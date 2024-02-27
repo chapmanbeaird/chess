@@ -52,7 +52,7 @@ public class Server {
         post("/user", new RegisterHandler(registerService, gson));
 
         //Create Game
-        post("/game", new CreateGameHandler(createGameService, gson));
+        post("/game", new CreateGameHandler(createGameService, gson, authDAO));
 
         //Join Game
         put("/game", new JoinGameHandler(joinGameService, gson));
@@ -61,7 +61,7 @@ public class Server {
         post("/session", new LoginHandler(loginService, gson));
 
         //Logout
-        delete("/session", new LogoutHandler(logoutService, gson));
+        delete("/session", new LogoutHandler(logoutService, gson, authDAO));
 
         //List Games
         get("/game", new ListGamesHandler(listGamesService, gson));

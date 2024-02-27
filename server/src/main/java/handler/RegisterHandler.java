@@ -22,7 +22,7 @@ public class RegisterHandler implements Route {
         try {
             UserData userData = gson.fromJson(request.body(), UserData.class);
 
-            if (userData == null || userData.username().isEmpty() || userData.password().isEmpty() || userData.email().isEmpty()) {
+            if (userData == null || userData.username() == null || userData.password() == null || userData.email() == null) {
                 response.status(400); // Bad Request
                 return gson.toJson(new SimpleResponse("Error: bad request"));
             }

@@ -25,6 +25,10 @@ public class JoinGameService {
             throw new DataAccessException("Game not found.");
         }
 
+        if (username == null){
+            throw new IllegalArgumentException("No user found with provided authtoken");
+        }
+
         // Check if the player is already in the game
         if (isPlayerAlreadyInGame(game, username)) {
             throw new DataAccessException("Player already in this game.");

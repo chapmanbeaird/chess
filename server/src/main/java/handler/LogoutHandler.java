@@ -1,7 +1,9 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
+import model.AuthData;
 import service.LogoutService;
 import spark.Request;
 import spark.Response;
@@ -10,24 +12,27 @@ import spark.Route;
 public class LogoutHandler implements Route {
     private final LogoutService logoutService;
     private final Gson gson;
+    private final AuthDAO authDAO;
 
-    public LogoutHandler(LogoutService logoutService, Gson gson) {
+    public LogoutHandler(LogoutService logoutService, Gson gson, AuthDAO authDAO) {
         this.logoutService = logoutService;
         this.gson = gson;
+        this.authDAO = authDAO;
     }
 
     @Override
     public Object handle(Request req, Response res) throws DataAccessException {
         try {
-            // Extract the authToken from the request header
-            String authToken = req.headers("Authorization");
-            if (authToken == null || authToken.isEmpty()) {
-                res.status(400); // Bad Request
-                return gson.toJson(new SimpleResponse("Error: invalid request"));
+            // Extract the authToken from the database and req header
+            String reqAuthToken = req.headers("Authorization");
+            AuthData DAOAuthData = authDAO.getAuthToken(reqAuthToken);
+            if (DAOAuthData == null || DAOAuthData.authToken() == null) {
+                res.status(401); // Unauthorized
+                return gson.toJson(new SimpleResponse("Error: unauthorized"));
             }
 
             // Perform the logout
-            logoutService.logoutUser(authToken);
+            logoutService.logoutUser(DAOAuthData.authToken());
             res.status(200); // OK
             return gson.toJson(new SimpleResponse("Logout successful"));
 

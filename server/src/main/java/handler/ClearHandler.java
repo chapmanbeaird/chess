@@ -17,6 +17,7 @@ public class ClearHandler implements Route {
         this.gson = gson;
     }
 
+    @Override
     public Object handle(Request req, Response res) {
         try {
             clearService.clear(); // Call the clear service
@@ -26,11 +27,5 @@ public class ClearHandler implements Route {
             res.status(500); // Internal Server Error
             return gson.toJson(new SimpleResponse("Failed to clear data: " + e.getMessage()));
         }
-    }
-
-
-    // This method internally calls 'handle' to avoid unused method error in code quality checker
-    public void ensureHandleIsUsed() {
-        throw new UnsupportedOperationException("This method is for static analysis tool compliance and should not be called at runtime.");
     }
 }

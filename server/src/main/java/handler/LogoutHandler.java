@@ -25,14 +25,14 @@ public class LogoutHandler implements Route {
         try {
             // Extract the authToken from the database and req header
             String reqAuthToken = req.headers("Authorization");
-            AuthData DAOAuthData = authDAO.getAuthToken(reqAuthToken);
-            if (DAOAuthData == null || DAOAuthData.authToken() == null) {
+            AuthData daoAuthData = authDAO.getAuthToken(reqAuthToken);
+            if (daoAuthData == null || daoAuthData.authToken() == null) {
                 res.status(401); // Unauthorized
                 return gson.toJson(new SimpleResponse("Error: unauthorized"));
             }
 
             // Perform the logout
-            logoutService.logoutUser(DAOAuthData.authToken());
+            logoutService.logoutUser(daoAuthData.authToken());
             res.status(200); // OK
             return gson.toJson(new SimpleResponse("Logout successful"));
 

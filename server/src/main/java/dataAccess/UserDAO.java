@@ -29,10 +29,6 @@ public class UserDAO {
         return users.get(username);
     }
 
-    public UserData getEmail(String email){
-        return users.get(email);
-    }
-
     public boolean isEmpty(){
         return users.isEmpty();
     }

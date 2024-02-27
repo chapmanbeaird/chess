@@ -25,8 +25,8 @@ public class CreateGameHandler implements Route {
 
             // Extract the authToken from the database and req header
             String reqAuthToken = req.headers("Authorization");
-            AuthData DAOAuthData = authDAO.getAuthToken(reqAuthToken);
-            if (DAOAuthData == null || DAOAuthData.authToken() == null) {
+            AuthData daoAuthData = authDAO.getAuthToken(reqAuthToken);
+            if (daoAuthData == null || daoAuthData.authToken() == null) {
                 res.status(401); // Unauthorized
                 return gson.toJson(new CreateGameHandler.SimpleResponse("Error: unauthorized"));
             }

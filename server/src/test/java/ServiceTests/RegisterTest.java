@@ -36,7 +36,7 @@ class RegisterTest {
         userDAO.createUser(existingUser); // Simulate existing user
 
         UserData newUserSameUsername = new UserData("existingUser", "newPassword", "newEmail@example.com");
-        assertNotNull(registerService.registerUser(newUserSameUsername), "Registration should fail with existing username");
+        assertNull(registerService.registerUser(newUserSameUsername), "Registration should fail with existing username");
     }
 
     @Test
@@ -45,12 +45,12 @@ class RegisterTest {
         userDAO.createUser(existingUser); // Simulate existing user
 
         UserData newUserSameEmail = new UserData("newUser", "password", "existingEmail@example.com");
-        assertNotNull(registerService.registerUser(newUserSameEmail), "Registration should fail with existing email");
+        assertNull(registerService.registerUser(newUserSameEmail), "Registration should fail with existing email");
     }
 
     @Test
     void testInvalidUserData() throws DataAccessException {
         UserData invalidUser = new UserData(null, null, null);
-        assertNotNull(registerService.registerUser(invalidUser), "Registration should fail with invalid user data");
+        assertNull(registerService.registerUser(invalidUser), "Registration should fail with invalid user data");
     }
 }

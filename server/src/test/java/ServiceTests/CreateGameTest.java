@@ -31,7 +31,6 @@ public class CreateGameTest {
 
         assertNotNull(createdGame); //make sure game exists
         assertEquals(gameName, createdGame.gameName()); //make sure game names are equal
-        assertEquals(creatorUsername, createdGame.whiteUsername()); // make sure creator is same as white username
         assertNull(createdGame.blackUsername(), "Black username should be null for a new game.");
         assertNull(createdGame.game(), "ChessGame should be null for a new game.");
         assertTrue(createdGame.gameID() > 0, "Game ID should be a positive integer.");

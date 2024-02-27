@@ -30,7 +30,7 @@ class LogoutTest {
         assertDoesNotThrow(() -> logoutService.logoutUser(validAuthToken), "Logout should succeed without throwing an exception");
 
         // Attempt to retrieve the deleted authToken to confirm logout
-        assertThrows(DataAccessException.class, () -> authDAO.getAuthToken(validAuthToken), "AuthToken should not exist after logout");
+        assertNull(authDAO.getAuthToken(validAuthToken), "AuthToken should be null after logout");
     }
 
     @Test

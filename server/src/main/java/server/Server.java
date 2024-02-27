@@ -10,6 +10,7 @@ import dataAccess.AuthDAO;
 import static spark.Spark.delete;
 import static spark.Spark.post;
 import static spark.Spark.put;
+import static spark.Spark.get;
 
 
 public class Server {
@@ -42,6 +43,7 @@ public class Server {
         JoinGameService joinGameService = new JoinGameService(gameDAO, authDAO);
         LoginService loginService = new LoginService(userDAO, authDAO);
         LogoutService logoutService = new LogoutService(authDAO);
+        ListGamesService listGamesService = new ListGamesService(gameDAO);
 
         //Clear route
         delete("/db", new ClearHandler(clearService, gson));
@@ -60,6 +62,9 @@ public class Server {
 
         //Logout
         delete("/session", new LogoutHandler(logoutService, gson));
+
+        //List Games
+        get("/game", new ListGamesHandler(listGamesService, gson));
     }
 
     public void stop() {

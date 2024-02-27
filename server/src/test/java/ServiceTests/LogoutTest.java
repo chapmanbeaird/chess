@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import service.LogoutService;
 import static org.junit.jupiter.api.Assertions.*;
 
-class LogoutServiceTest {
+class LogoutTest {
 
     private AuthDAO authDAO;
     private LogoutService logoutService;

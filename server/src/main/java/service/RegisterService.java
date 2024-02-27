@@ -3,6 +3,8 @@ package service;
 import dataAccess.DataAccessException;
 import dataAccess.UserDAO;
 import model.UserData;
+import org.eclipse.jetty.server.Authentication;
+
 import java.util.UUID;
 
 public class RegisterService {
@@ -22,17 +24,17 @@ public class RegisterService {
     public boolean registerUser(UserData userData) throws DataAccessException {
         // Validate user data
         if (userData == null || userData.username() == null || userData.password() == null || userData.email() == null) {
-            return false; // Invalid user data
+            return false;
         }
 
-        // Check if the username or email is already taken
-        if (userDAO.getUser(userData.username()) != null) {
+        // Check if the username is already taken
+        if (userDAO.isUsernameUsed(userData.username())) {
             return false;
         }
 
         // Check if email is already used
-         if (userDAO.getUser(userData.email()) != null) {
-             return false; // Email already in use
+         if (userDAO.isEmailUsed(userData.email())) {
+             return false;
          }
 
         // Store the user in the database

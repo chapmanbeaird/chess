@@ -15,8 +15,22 @@ public class UserDAO {
         users.put(user.username(), user);
     }
 
-    public UserData getUser(String username) throws DataAccessException {
+    public boolean isEmailUsed(String email) {
+        return users.values().stream().anyMatch(user -> email.equals(user.email()));
+    }
+
+    public boolean isUsernameUsed(String username) {
+        return users.values().stream().anyMatch(user -> username.equals(user.username()));
+    }
+
+
+
+    public UserData getUser(String username){
         return users.get(username);
+    }
+
+    public UserData getEmail(String email){
+        return users.get(email);
     }
 
     public boolean isEmpty(){

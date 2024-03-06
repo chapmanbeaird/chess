@@ -3,9 +3,7 @@ package service;
 import dataAccess.AuthDAO;
 import dataAccess.GameDAO;
 import dataAccess.DataAccessException;
-import model.AuthData;
 import model.GameData;
-import chess.ChessGame;
 
 public class JoinGameService {
     private final GameDAO gameDAO;
@@ -22,7 +20,7 @@ public class JoinGameService {
 
 
         if (game == null) {
-            throw new DataAccessException("Game not found.");
+            throw new DataAccessException("Game not found.", e);
         }
 
         if (username == null){
@@ -33,12 +31,12 @@ public class JoinGameService {
         GameData updatedGame;
         if ("WHITE".equals(playerColor)) {
             if (game.whiteUsername() != null) {
-                throw new DataAccessException("White player spot already taken.");
+                throw new DataAccessException("White player spot already taken.", e);
             }
             updatedGame = new GameData(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
         } else if ("BLACK".equals(playerColor)) {
             if (game.blackUsername() != null) {
-                throw new DataAccessException("Black player spot already taken.");
+                throw new DataAccessException("Black player spot already taken.", e);
             }
             updatedGame = new GameData(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
         } else {

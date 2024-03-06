@@ -15,7 +15,7 @@ public class CreateGameService {
 
     public GameData createGame(String gameName) throws DataAccessException {
         if (gameDAO.gameNameExists(gameName)){
-            throw new DataAccessException("Game name already taken");
+            throw new DataAccessException("Game name already taken", e);
         }
 
         int gameId = generateGameId();

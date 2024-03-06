@@ -11,14 +11,14 @@ public class GameDAO {
 
     public void createGame(GameData game) throws DataAccessException {
         if (games.containsKey(game.gameID())){
-            throw new DataAccessException("Game already exists");
+            throw new DataAccessException("Game already exists", e);
         }
         games.put(game.gameID(), game);
     }
 
     public GameData getGame(int gameId) throws DataAccessException {
         if (!games.containsKey(gameId)){
-            throw new DataAccessException("Game does not exist");
+            throw new DataAccessException("Game does not exist", e);
         }
         GameData game = games.get(gameId);
         return game;
@@ -30,7 +30,7 @@ public class GameDAO {
 
     public void updateGame(int gameId, GameData updatedGame) throws DataAccessException {
         if (!games.containsKey(gameId)) {
-            throw new DataAccessException("Game not found.");
+            throw new DataAccessException("Game not found.", e);
         }
         games.put(gameId, updatedGame);
     }

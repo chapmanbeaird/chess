@@ -10,7 +10,7 @@ public class UserDAO {
 
     public void createUser(UserData user) throws DataAccessException {
         if (users.containsKey(user.username())){
-            throw new DataAccessException("User already exists");
+            throw new DataAccessException("User already exists", e);
         }
         users.put(user.username(), user);
     }

@@ -8,7 +8,7 @@ public class AuthDAO {
 
     public void createAuthToken(AuthData authToken) throws DataAccessException {
         if (authTokens.containsKey(authToken.authToken())){
-            throw new DataAccessException("AuthToken already exists");
+            throw new DataAccessException("AuthToken already exists", e);
         }
         authTokens.put(authToken.authToken(), authToken);
     }
@@ -36,7 +36,7 @@ public class AuthDAO {
 
     public void deleteAuthToken(String token) throws DataAccessException {
         if (!authTokens.containsKey(token)){
-            throw new DataAccessException("AuthToken does not exist");
+            throw new DataAccessException("AuthToken does not exist", e);
         }
         authTokens.remove(token);
     }

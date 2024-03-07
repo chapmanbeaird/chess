@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.*;
 import handler.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.*;
 import spark.Spark;
 
@@ -20,9 +21,9 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         // Initialize services
-        UserDAO userDAO = new MemoryUserDAO();
-        GameDAO gameDAO = new MemoryGameDAO();
-        AuthDAO authDAO = new MemoryAuthDAO();
+        UserDAO userDAO = new MysqlUserDAO();
+        GameDAO gameDAO = new MysqlGameDAO();
+        AuthDAO authDAO = new MysqlAuthDAO();
 
         // Initialize Gson for JSON parsing
         Gson gson = new Gson();
@@ -39,7 +40,7 @@ public class Server {
         RegisterService registerService = new RegisterService(userDAO, authDAO);
         CreateGameService createGameService = new CreateGameService(gameDAO);
         JoinGameService joinGameService = new JoinGameService(gameDAO, authDAO);
-        LoginService loginService = new LoginService(userDAO, authDAO);
+        LoginService loginService = new LoginService(userDAO, authDAO, new BCryptPasswordEncoder());
         LogoutService logoutService = new LogoutService(authDAO);
         ListGamesService listGamesService = new ListGamesService(gameDAO);
 

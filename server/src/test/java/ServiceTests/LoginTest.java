@@ -5,6 +5,8 @@ import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.LoginService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,15 +16,18 @@ class LoginTest {
     private UserDAO userDAO;
     private AuthDAO authDAO;
     private LoginService loginService;
+    private BCryptPasswordEncoder encoder;
 
     @BeforeEach
     void setUp() throws DataAccessException {
         userDAO = new MemoryUserDAO();
+        encoder = new BCryptPasswordEncoder();
         authDAO = new MemoryAuthDAO();
-        loginService = new LoginService(userDAO, authDAO);
-
+        loginService = new LoginService(userDAO, authDAO, encoder);
+        // Create a new hashed password
+        String hashedPassword = encoder.encode("testPass");
         // Add a dummy user
-        userDAO.createUser(new UserData("testUser", "testPass", "testEmail@example.com"));
+        userDAO.createUser(new UserData("testUser", hashedPassword, "testEmail@example.com"));
     }
 
     @Test

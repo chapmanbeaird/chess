@@ -7,12 +7,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MysqlAuthDAO {
+public class MysqlAuthDAO implements AuthDAO {
 
     private final static String CREATE_AUTH = "INSERT INTO auth_tokens (authToken, username) VALUES (?, ?)";
     private final static String GET_AUTH = "SELECT * FROM auth_tokens WHERE authToken = ?";
     private final static String DELETE_AUTH = "DELETE FROM auth_tokens WHERE authToken = ?";
     private final static String CLEAR_ALL_AUTH = "DELETE FROM auth_tokens";
+    private final String CHECK_IF_EMPTY = "SELECT COUNT(*) AS rowcount FROM auth_tokens";
+
 
 
     // Method to create a new Auth Token
@@ -85,7 +87,6 @@ public class MysqlAuthDAO {
     }
 
     public boolean isEmpty() throws DataAccessException {
-        final String CHECK_IF_EMPTY = "SELECT COUNT(*) AS rowcount FROM users";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(CHECK_IF_EMPTY)) {
 

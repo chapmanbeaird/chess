@@ -9,14 +9,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MysqlGameDAO {
+public class MysqlGameDAO implements GameDAO {
 
-    private final static String CREATE_GAME = "INSERT INTO games (...) VALUES (...)";
+    private final static String CREATE_GAME = "INSERT INTO games (gameID, whiteUsername, blackUsername, gameName, gameState) VALUES (?, ?, ?, ?, ?)";
     private final static String GET_GAME = "SELECT * FROM games WHERE gameID = ?";
     private final static String LIST_GAMES = "SELECT * FROM games";
-    private final static String UPDATE_GAME = "UPDATE games SET ... WHERE gameID = ?";
+    private final static String UPDATE_GAME = "UPDATE games SET whiteUsername = ?, blackUsername = ?, gameName = ?, gameState = ? WHERE gameID = ?";
     private final static String CLEAR_GAMES = "DELETE FROM games";
     private final static String CHECK_GAME_NAME = "SELECT 1 FROM games WHERE gameName = ?";
+    private final static String CHECK_IF_EMPTY = "SELECT COUNT(*) AS rowcount FROM games";
+
     private Gson gson = new Gson();
 
 
@@ -26,10 +28,11 @@ public class MysqlGameDAO {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(CREATE_GAME, Statement.RETURN_GENERATED_KEYS)) {
 
-            stmt.setString(1, game.whiteUsername());
-            stmt.setString(2, game.blackUsername());
-            stmt.setString(3, game.gameName());
-            stmt.setString(4, gson.toJson(game.game())); // converts ChessGame object to json
+            stmt.setInt(1, game.gameID());
+            stmt.setString(2, game.whiteUsername());
+            stmt.setString(3, game.blackUsername());
+            stmt.setString(4, game.gameName());
+            stmt.setString(5, gson.toJson(game.game())); // converts ChessGame object to json
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -50,7 +53,7 @@ public class MysqlGameDAO {
                 String whiteUsername = rs.getString("whiteUsername");
                 String blackUsername = rs.getString("blackUsername");
                 String gameName = rs.getString("gameName");
-                ChessGame game = gson.fromJson(rs.getString("game"), ChessGame.class);
+                ChessGame game = gson.fromJson(rs.getString("gameState"), ChessGame.class);
                 return new GameData(id, whiteUsername, blackUsername, gameName, game);
             } else {
                 return null;
@@ -73,7 +76,7 @@ public class MysqlGameDAO {
                 String whiteUsername = rs.getString("whiteUsername");
                 String blackUsername = rs.getString("blackUsername");
                 String gameName = rs.getString("gameName");
-                ChessGame game = gson.fromJson(rs.getString("game"), ChessGame.class);
+                ChessGame game = gson.fromJson(rs.getString("gameState"), ChessGame.class);
                 games.add(new GameData(id, whiteUsername, blackUsername, gameName, game));
             }
 
@@ -126,7 +129,6 @@ public class MysqlGameDAO {
     }
 
     public boolean isEmpty() throws DataAccessException {
-        final String CHECK_IF_EMPTY = "SELECT COUNT(*) AS rowcount FROM users";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(CHECK_IF_EMPTY)) {
 

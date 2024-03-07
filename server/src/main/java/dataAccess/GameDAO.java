@@ -10,13 +10,13 @@ public interface GameDAO {
 
     public GameData getGame(int gameId) throws DataAccessException ;
 
-    public List<GameData> listGames();
+    public List<GameData> listGames() throws DataAccessException;
 
     public void updateGame(int gameId, GameData updatedGame) throws DataAccessException ;
 
     public boolean gameNameExists(String gameName) throws DataAccessException;
 
-    public boolean isEmpty();
+    public boolean isEmpty() throws DataAccessException;
 
-    public void clearGames();
+    public void clearGames() throws DataAccessException;
 }

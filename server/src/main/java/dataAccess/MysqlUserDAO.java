@@ -15,6 +15,8 @@ public class MysqlUserDAO implements UserDAO{
     private final static String CHECK_EMAIL = "SELECT * FROM users WHERE email = ?";
     private final static String CHECK_USERNAME = "SELECT * FROM users WHERE username = ?";
     private final static String CLEAR_USERS = "DELETE FROM users";
+    private final static String CHECK_IF_EMPTY = "SELECT COUNT(*) AS rowcount FROM users";
+
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 
@@ -27,8 +29,8 @@ public class MysqlUserDAO implements UserDAO{
              PreparedStatement stmt = conn.prepareStatement(CREATE_USER)) {
 
             stmt.setString(1, user.username());
-            stmt.setString(2, user.email());
-            stmt.setString(3, hashedPassword);
+            stmt.setString(2, hashedPassword);
+            stmt.setString(3, user.email());
             stmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -120,7 +122,6 @@ public class MysqlUserDAO implements UserDAO{
     }
 
     public boolean isEmpty() throws DataAccessException {
-        final String CHECK_IF_EMPTY = "SELECT COUNT(*) AS rowcount FROM users";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(CHECK_IF_EMPTY)) {
 

@@ -24,6 +24,10 @@ public class MysqlGameDAO implements GameDAO {
 
 
     public void createGame(GameData game) throws DataAccessException {
+        boolean gameExists = checkGameExists(game.gameID());
+        if (gameExists) {
+            throw new DataAccessException("game found with gameId: " + game.gameID());
+        }
         // Use SQL INSERT statement to add game
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(CREATE_GAME, Statement.RETURN_GENERATED_KEYS)) {
@@ -87,6 +91,10 @@ public class MysqlGameDAO implements GameDAO {
     }
 
     public void updateGame(int gameId, GameData updatedGame) throws DataAccessException {
+        boolean gameExists = checkGameExists(gameId);
+        if (!gameExists) {
+            throw new DataAccessException("No game found with gameId: " + gameId);
+        }
         // Use SQL UPDATE statement to update game
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(UPDATE_GAME)) {
@@ -94,7 +102,7 @@ public class MysqlGameDAO implements GameDAO {
             stmt.setString(1, updatedGame.whiteUsername());
             stmt.setString(2, updatedGame.blackUsername());
             stmt.setString(3, updatedGame.gameName());
-            stmt.setString(4, gson.toJson(updatedGame.game())); //coverts chessgame to json
+            stmt.setString(4, gson.toJson(updatedGame.game()));//coverts chessgame to json
             stmt.setInt(5, gameId);
             stmt.executeUpdate();
 
@@ -141,5 +149,16 @@ public class MysqlGameDAO implements GameDAO {
             throw new DataAccessException("Error encountered while checking if users table is empty", e);
         }
         return true; // Default to true
+    }
+    private boolean checkGameExists(int gameId) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(GET_GAME)) {
+            stmt.setInt(1, gameId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next(); // Returns true if a game with the gameId exists
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error encountered while checking if game exists with gameId: " + gameId, e);
+        }
     }
 }

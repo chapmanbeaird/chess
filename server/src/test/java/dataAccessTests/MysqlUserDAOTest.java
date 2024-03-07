@@ -102,4 +102,45 @@ public class MysqlUserDAOTest {
         // Operation & Assertion
         assertNull(userDAO.getUser("nonExistentUser"));
     }
+
+    @Test
+    public void testCreateUserDuplicateUsernameOrEmail() throws DataAccessException {
+        String username = "duplicateUser";
+        String email = "duplicate@example.com";
+        String password = "testPassword";
+        UserData firstUser = new UserData(username, password, email);
+        UserData secondUser = new UserData(username, "anotherPassword", "duplicate@example.com");
+
+        userDAO.createUser(firstUser);
+        assertThrows(DataAccessException.class, () -> userDAO.createUser(secondUser), "Expected DataAccessException for duplicate username or email.");
+    }
+    @Test
+    public void testClearUsers() throws DataAccessException {
+        // Setup: Assuming a user has been added
+        userDAO.createUser(new UserData("clearUser", "password", "clear@example.com"));
+
+        // Operation
+        userDAO.clearUsers();
+
+        // Assertion: Check if table is empty
+        assertTrue(userDAO.isEmpty(), "User table should be empty after calling clearUsers.");
+    }
+    @Test
+    public void testIsEmptyTrue() throws DataAccessException {
+        // Setup: Clear users table first to ensure it's empty
+        userDAO.clearUsers();
+
+        // Operation & Assertion: Check if table is empty
+        assertTrue(userDAO.isEmpty(), "User table should be empty.");
+    }
+
+    @Test
+    public void testIsEmptyFalse() throws DataAccessException {
+        // Setup: Add a user to ensure the table is not empty
+        userDAO.createUser(new UserData("nonEmptyUser", "password", "nonempty@example.com"));
+
+        // Operation & Assertion: Check if table is not empty
+        assertFalse(userDAO.isEmpty(), "User table should not be empty after adding a user.");
+    }
+
 }

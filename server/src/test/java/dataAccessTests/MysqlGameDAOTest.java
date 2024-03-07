@@ -1,10 +1,14 @@
 package dataAccessTests;
 
-import dataAccess.*;
-import model.GameData;
 import chess.ChessGame;
+import dataAccess.DataAccessException;
+import dataAccess.MysqlGameDAO;
+import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class MysqlGameDAOTest {
@@ -90,4 +94,56 @@ public class MysqlGameDAOTest {
         assertTrue(gameDAO.gameNameExists(gameName));
         assertFalse(gameDAO.gameNameExists("NonExistentGameName"));
     }
+
+    @Test
+    public void testCreateGameWithExistingID() throws DataAccessException {
+        // Setup
+        int gameId = 1;
+        GameData gameData = new GameData(gameId, "whiteUser", "blackUser", "TestGame", mockChessGame);
+        gameDAO.createGame(gameData);
+
+        // Operation & Assertion
+        assertThrows(DataAccessException.class, () -> gameDAO.createGame(gameData), "Expected DataAccessException when creating a game with existing gameID.");
+    }
+    @Test
+    public void testListGamesEmpty() throws DataAccessException {
+        // Assuming clearGames has successfully cleared all entries
+        gameDAO.clearGames();
+
+        // Operation
+        List<GameData> gamesList = gameDAO.listGames();
+
+        // Assertion
+        assertTrue(gamesList.isEmpty(), "Game list should be empty after clearing all games.");
+    }
+    @Test
+    public void testUpdateNonExistingGame() {
+        // Setup
+        int nonExistentGameId = 999; // Assuming this ID does not exist
+        GameData updatedGameData = new GameData(nonExistentGameId, "newWhiteUser", "newBlackUser", "UpdatedGame", mockChessGame);
+
+        // Operation & Assertion
+        assertThrows(DataAccessException.class, () -> gameDAO.updateGame(nonExistentGameId, updatedGameData), "Expected DataAccessException when updating a non-existent game.");
+    }
+    @Test
+    public void testClearGames() throws DataAccessException {
+        // Setup
+        gameDAO.createGame(new GameData(1, "whiteUser", "blackUser", "TestGame", mockChessGame));
+
+        // Operation
+        gameDAO.clearGames();
+
+        // Assertion
+        assertTrue(gameDAO.isEmpty(), "Games table should be empty after clearGames operation.");
+    }
+    @Test
+    public void testIsNotEmpty() throws DataAccessException {
+        // Setup: Creating a game should ensure the games table is not empty
+        gameDAO.createGame(new GameData(1, "whiteUser", "blackUser", "TestGame", mockChessGame));
+
+        // Operation & Assertion
+        assertFalse(gameDAO.isEmpty(), "Games table should not be empty after adding a game.");
+    }
+
+
 }

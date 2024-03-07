@@ -1,16 +1,12 @@
 package server;
 
+import com.google.gson.Gson;
+import dataAccess.*;
 import handler.*;
 import service.*;
-import spark.*;
-import com.google.gson.Gson;
-import dataAccess.UserDAO;
-import dataAccess.GameDAO;
-import dataAccess.AuthDAO;
-import static spark.Spark.delete;
-import static spark.Spark.post;
-import static spark.Spark.put;
-import static spark.Spark.get;
+import spark.Spark;
+
+import static spark.Spark.*;
 
 
 public class Server {
@@ -22,9 +18,9 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         // Initialize services
-        UserDAO userDAO = new UserDAO();
-        GameDAO gameDAO = new GameDAO();
-        AuthDAO authDAO = new AuthDAO();
+        mysqlUserDAO userDAO = new mysqlUserDAO();
+        mysqlGameDAO gameDAO = new mysqlGameDAO();
+        mysqlAuthDAO authDAO = new mysqlAuthDAO();
 
         // Initialize Gson for JSON parsing
         Gson gson = new Gson();
@@ -36,7 +32,7 @@ public class Server {
         return Spark.port();
     }
 
-    private void setupRoutes(Gson gson, UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
+    private void setupRoutes(Gson gson, mysqlUserDAO userDAO, mysqlGameDAO gameDAO, mysqlAuthDAO authDAO){
         ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
         RegisterService registerService = new RegisterService(userDAO, authDAO);
         CreateGameService createGameService = new CreateGameService(gameDAO);

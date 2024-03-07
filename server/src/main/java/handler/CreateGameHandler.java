@@ -3,11 +3,11 @@ package handler;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import model.AuthData;
+import model.GameData;
 import service.CreateGameService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import model.GameData;
 
 public class CreateGameHandler implements Route {
     private CreateGameService createGameService;

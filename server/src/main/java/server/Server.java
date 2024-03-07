@@ -66,8 +66,14 @@ public class Server {
     }
     private void initializeDatabase() {
         InitializeDatabase dbInitializer = new InitializeDatabase();
-        // Call the start method to create the database and tables if they don't exist
-        dbInitializer.start();
+        try {
+            // Call the start method to create the database and tables if they don't exist
+            dbInitializer.start();
+        } catch (DataAccessException e) {
+            // Log the exception
+            e.printStackTrace();
+            stop();
+        }
     }
 
     public void stop() {

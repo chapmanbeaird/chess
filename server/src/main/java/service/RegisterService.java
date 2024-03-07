@@ -1,19 +1,18 @@
 package service;
 
-import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
+import dataAccess.mysqlAuthDAO;
+import dataAccess.mysqlUserDAO;
 import model.AuthData;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 
 import java.util.UUID;
 
 public class RegisterService {
-    private UserDAO userDAO;
-    private AuthDAO authDAO;
+    private mysqlUserDAO userDAO;
+    private mysqlAuthDAO authDAO;
 
-    public RegisterService(UserDAO userDAO, AuthDAO authDAO) {
+    public RegisterService(mysqlUserDAO userDAO, mysqlAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

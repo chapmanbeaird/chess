@@ -1,17 +1,17 @@
 package service;
 
-import dataAccess.UserDAO;
-import dataAccess.GameDAO;
-import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
+import dataAccess.mysqlAuthDAO;
+import dataAccess.mysqlGameDAO;
+import dataAccess.mysqlUserDAO;
 
 public class ClearService {
 
-    private final UserDAO userDAO;
-    private final GameDAO gameDAO;
-    private final AuthDAO authDAO;
+    private final mysqlUserDAO userDAO;
+    private final mysqlGameDAO gameDAO;
+    private final mysqlAuthDAO authDAO;
 
-    public ClearService(UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO) {
+    public ClearService(mysqlUserDAO userDAO, mysqlGameDAO gameDAO, mysqlAuthDAO authDAO) {
         this.userDAO = userDAO;
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;

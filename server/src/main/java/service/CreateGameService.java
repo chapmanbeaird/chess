@@ -1,21 +1,22 @@
 package service;
 
-import dataAccess.GameDAO;
 import dataAccess.DataAccessException;
+import dataAccess.mysqlGameDAO;
 import model.GameData;
+
 import java.util.Random;
 
 public class CreateGameService {
-    private GameDAO gameDAO;
+    private mysqlGameDAO gameDAO;
     private static final Random random = new Random();
 
-    public CreateGameService(GameDAO gameDAO) {
+    public CreateGameService(mysqlGameDAO gameDAO) {
         this.gameDAO = gameDAO;
     }
 
     public GameData createGame(String gameName) throws DataAccessException {
         if (gameDAO.gameNameExists(gameName)){
-            throw new DataAccessException("Game name already taken", e);
+            throw new DataAccessException("Game name already taken");
         }
 
         int gameId = generateGameId();

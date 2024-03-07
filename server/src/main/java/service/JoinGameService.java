@@ -1,15 +1,15 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.GameDAO;
 import dataAccess.DataAccessException;
+import dataAccess.mysqlAuthDAO;
+import dataAccess.mysqlGameDAO;
 import model.GameData;
 
 public class JoinGameService {
-    private final GameDAO gameDAO;
-    private final AuthDAO authDAO;
+    private final mysqlGameDAO gameDAO;
+    private final mysqlAuthDAO authDAO;
 
-    public JoinGameService(GameDAO gameDAO, AuthDAO authDAO) {
+    public JoinGameService(mysqlGameDAO gameDAO, mysqlAuthDAO authDAO) {
         this.gameDAO = gameDAO;
         this.authDAO = authDAO;
     }
@@ -20,7 +20,7 @@ public class JoinGameService {
 
 
         if (game == null) {
-            throw new DataAccessException("Game not found.", e);
+            throw new DataAccessException("Game not found.");
         }
 
         if (username == null){

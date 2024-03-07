@@ -1,21 +1,22 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataAccess.AuthDAO;
+import dataAccess.mysqlAuthDAO;
 import model.AuthData;
+import model.GameData;
 import service.ListGamesService;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-import model.GameData;
+
 import java.util.List;
 
 public class ListGamesHandler implements Route {
     private ListGamesService listGamesService;
     private Gson gson;
-    private AuthDAO authDAO;
+    private mysqlAuthDAO authDAO;
 
-    public ListGamesHandler(ListGamesService listGamesService, Gson gson, AuthDAO authDAO) {
+    public ListGamesHandler(ListGamesService listGamesService, Gson gson, mysqlAuthDAO authDAO) {
         this.listGamesService = listGamesService;
         this.gson = gson;
         this.authDAO = authDAO;

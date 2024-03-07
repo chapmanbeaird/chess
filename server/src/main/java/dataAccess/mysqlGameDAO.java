@@ -1,11 +1,12 @@
 package dataAccess;
 
 import chess.ChessGame;
+import com.google.gson.Gson;
 import model.GameData;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import com.google.gson.Gson;
 
 
 public class mysqlGameDAO {
@@ -15,6 +16,7 @@ public class mysqlGameDAO {
     private final static String LIST_GAMES = "SELECT * FROM games";
     private final static String UPDATE_GAME = "UPDATE games SET ... WHERE gameID = ?";
     private final static String CLEAR_GAMES = "DELETE FROM games";
+    private final static String CHECK_GAME_NAME = "SELECT 1 FROM games WHERE gameName = ?";
     private Gson gson = new Gson();
 
 
@@ -105,6 +107,21 @@ public class mysqlGameDAO {
                 stmt.executeUpdate();
         } catch (SQLException e) {
             throw new DataAccessException("Error encountered while clearing games", e);
+        }
+    }
+
+    public boolean gameNameExists(String gameName) throws DataAccessException{
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(CHECK_GAME_NAME)) {
+
+            stmt.setString(1, gameName);
+            ResultSet rs = stmt.executeQuery();
+
+            // If the ResultSet is not empty, it means a game with that name exists
+            return rs.next();
+
+        } catch (SQLException e) {
+            throw new DataAccessException("Error encountered while checking if game name exists", e);
         }
     }
 }

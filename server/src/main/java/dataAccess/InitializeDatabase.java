@@ -1,15 +1,16 @@
 package dataAccess;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 public class InitializeDatabase {
-    // Constants for JDBC URL, username, and password
-    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/chess";
-    private static final String USERNAME = "chapmanbeaird";
-    private static final String PASSWORD = "sailboat6";
+    private static String JDBC_URL;
+    private static String USERNAME;
+    private static String PASSWORD;
 
     // SQL statements to create tables if they do not exist
     private static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS users (" +
@@ -32,7 +33,29 @@ public class InitializeDatabase {
             "username VARCHAR(50) NOT NULL" +
             ");";
 
+    private static void loadDatabaseProperties() {
+        // Load properties file from classpath
+        try (InputStream input = InitializeDatabase.class.getClassLoader().getResourceAsStream("db.properties")) {
+            Properties prop = new Properties();
+            if (input == null) {
+                throw new RuntimeException("Unable to find db.properties");
+            }
+            prop.load(input);
+
+            String host = prop.getProperty("db.host");
+            String port = prop.getProperty("db.port");
+            String name = prop.getProperty("db.name");
+
+            JDBC_URL = "jdbc:mysql://" + host + ":" + port + "/" + name;
+            USERNAME = prop.getProperty("db.user");
+            PASSWORD = prop.getProperty("db.password");
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load database properties", e);
+        }
+    }
     public void start() throws DataAccessException {
+        //load in the credentials from db.properties
+        loadDatabaseProperties();
         // Ensure the database exists
         DatabaseManager.createDatabase();
 

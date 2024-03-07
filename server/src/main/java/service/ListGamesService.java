@@ -1,15 +1,15 @@
 package service;
 
 import dataAccess.DataAccessException;
-import dataAccess.mysqlGameDAO;
+import dataAccess.GameDAO;
 import model.GameData;
 
 import java.util.List;
 
 public class ListGamesService {
-    private mysqlGameDAO gameDAO;
+    private GameDAO gameDAO;
 
-    public ListGamesService(mysqlGameDAO gameDAO) {
+    public ListGamesService(GameDAO gameDAO) {
         this.gameDAO = gameDAO;
     }
 

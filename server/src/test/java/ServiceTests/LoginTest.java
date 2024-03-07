@@ -1,13 +1,13 @@
 package ServiceTests;
 
-import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
-import dataAccess.AuthDAO;
+import dataAccess.*;
 import model.UserData;
-import service.LoginService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import service.LoginService;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class LoginTest {
 
@@ -17,8 +17,8 @@ class LoginTest {
 
     @BeforeEach
     void setUp() throws DataAccessException {
-        userDAO = new UserDAO();
-        authDAO = new AuthDAO();
+        userDAO = new MemoryUserDAO();
+        authDAO = new MemoryAuthDAO();
         loginService = new LoginService(userDAO, authDAO);
 
         // Add a dummy user

@@ -1,17 +1,15 @@
 package ServiceTests;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import dataAccess.UserDAO;
-import dataAccess.GameDAO;
-import dataAccess.AuthDAO;
 import service.ClearService;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ClearServiceTest {
 
@@ -22,9 +20,9 @@ class ClearServiceTest {
 
     @BeforeEach
     void setUp() throws DataAccessException{
-        userDAO = new UserDAO();
-        gameDAO = new GameDAO();
-        authDAO = new AuthDAO();
+        userDAO = new MemoryUserDAO();
+        gameDAO = new MemoryGameDAO();
+        authDAO = new MemoryAuthDAO();
         clearService = new ClearService(userDAO, gameDAO, authDAO);
 
         // Add dummy data to DAOs

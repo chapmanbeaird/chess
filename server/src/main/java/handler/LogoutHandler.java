@@ -1,8 +1,8 @@
 package handler;
 
 import com.google.gson.Gson;
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.mysqlAuthDAO;
 import model.AuthData;
 import service.LogoutService;
 import spark.Request;
@@ -12,9 +12,9 @@ import spark.Route;
 public class LogoutHandler implements Route {
     private final LogoutService logoutService;
     private final Gson gson;
-    private final mysqlAuthDAO authDAO;
+    private final AuthDAO authDAO;
 
-    public LogoutHandler(LogoutService logoutService, Gson gson, mysqlAuthDAO authDAO) {
+    public LogoutHandler(LogoutService logoutService, Gson gson, AuthDAO authDAO) {
         this.logoutService = logoutService;
         this.gson = gson;
         this.authDAO = authDAO;

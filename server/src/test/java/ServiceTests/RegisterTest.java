@@ -1,13 +1,13 @@
 package ServiceTests;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
+import dataAccess.*;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.RegisterService;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class RegisterTest {
 
@@ -17,8 +17,8 @@ class RegisterTest {
 
     @BeforeEach
     void setUp() throws DataAccessException {
-        userDAO = new UserDAO();
-        authDAO = new AuthDAO();
+        userDAO = new MemoryUserDAO();
+        authDAO = new MemoryAuthDAO();
         registerService = new RegisterService(userDAO, authDAO);
 
         // Clear the database (if necessary) and/or ensure it's in a known state before each test

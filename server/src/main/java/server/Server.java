@@ -14,13 +14,15 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
+        initializeDatabase();
+
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
         // Initialize services
-        mysqlUserDAO userDAO = new mysqlUserDAO();
-        mysqlGameDAO gameDAO = new mysqlGameDAO();
-        mysqlAuthDAO authDAO = new mysqlAuthDAO();
+        UserDAO userDAO = new MemoryUserDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
 
         // Initialize Gson for JSON parsing
         Gson gson = new Gson();
@@ -32,7 +34,7 @@ public class Server {
         return Spark.port();
     }
 
-    private void setupRoutes(Gson gson, mysqlUserDAO userDAO, mysqlGameDAO gameDAO, mysqlAuthDAO authDAO){
+    private void setupRoutes(Gson gson, UserDAO userDAO, GameDAO gameDAO, AuthDAO authDAO){
         ClearService clearService = new ClearService(userDAO, gameDAO, authDAO);
         RegisterService registerService = new RegisterService(userDAO, authDAO);
         CreateGameService createGameService = new CreateGameService(gameDAO);
@@ -61,6 +63,11 @@ public class Server {
 
         //List Games
         get("/game", new ListGamesHandler(listGamesService, gson, authDAO));
+    }
+    private void initializeDatabase() {
+        InitializeDatabase dbInitializer = new InitializeDatabase();
+        // Call the start method to create the database and tables if they don't exist
+        dbInitializer.start();
     }
 
     public void stop() {

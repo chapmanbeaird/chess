@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 
-public class mysqlUserDAO {
+public class MysqlUserDAO implements UserDAO{
     private final static String CREATE_USER = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
     private final static String GET_USER = "SELECT * FROM users WHERE username = ?";
     private final static String CHECK_EMAIL = "SELECT * FROM users WHERE email = ?";
@@ -66,7 +66,7 @@ public class mysqlUserDAO {
             ResultSet rs = stmt.executeQuery();
             return rs.next();
 
-        } catch (SQLException e) {
+        } catch (SQLException | DataAccessException e) {
             throw new DataAccessException("Error encountered while checking email", e);
         }
     }
@@ -117,6 +117,22 @@ public class mysqlUserDAO {
         } catch (SQLException e) {
             throw new DataAccessException("Error encountered while clearing users", e);
         }
+    }
+
+    public boolean isEmpty() throws DataAccessException {
+        final String CHECK_IF_EMPTY = "SELECT COUNT(*) AS rowcount FROM users";
+        try (Connection conn = DatabaseManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(CHECK_IF_EMPTY)) {
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt("rowcount");
+                return count == 0; // Return true if no users exist
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error encountered while checking if users table is empty", e);
+        }
+        return true; // Default to true
     }
 
 }

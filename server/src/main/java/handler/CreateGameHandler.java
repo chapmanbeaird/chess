@@ -1,7 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataAccess.mysqlAuthDAO;
+import dataAccess.AuthDAO;
 import model.AuthData;
 import model.GameData;
 import service.CreateGameService;
@@ -12,9 +12,9 @@ import spark.Route;
 public class CreateGameHandler implements Route {
     private CreateGameService createGameService;
     private Gson gson;
-    private mysqlAuthDAO authDAO;
+    private AuthDAO authDAO;
 
-    public CreateGameHandler(CreateGameService createGameService, Gson gson, mysqlAuthDAO authDAO) {
+    public CreateGameHandler(CreateGameService createGameService, Gson gson, AuthDAO authDAO) {
         this.createGameService = createGameService;
         this.gson = gson;
         this.authDAO = authDAO;

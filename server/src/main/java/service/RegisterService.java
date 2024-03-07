@@ -1,18 +1,16 @@
 package service;
 
-import dataAccess.DataAccessException;
-import dataAccess.mysqlAuthDAO;
-import dataAccess.mysqlUserDAO;
+import dataAccess.*;
 import model.AuthData;
 import model.UserData;
 
 import java.util.UUID;
 
 public class RegisterService {
-    private mysqlUserDAO userDAO;
-    private mysqlAuthDAO authDAO;
+    private UserDAO userDAO;
+    private AuthDAO authDAO;
 
-    public RegisterService(mysqlUserDAO userDAO, mysqlAuthDAO authDAO) {
+    public RegisterService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

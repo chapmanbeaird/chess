@@ -1,43 +1,18 @@
 package dataAccess;
+
 import model.AuthData;
-import java.util.HashMap;
-import java.util.Map;
 
-public class AuthDAO {
-    private final Map<String, AuthData> authTokens = new HashMap<>();
+public interface AuthDAO {
 
-    public void createAuthToken(AuthData authToken) throws DataAccessException {
-        if (authTokens.containsKey(authToken.authToken())){
-            throw new DataAccessException("AuthToken already exists", e);
-        }
-        authTokens.put(authToken.authToken(), authToken);
-    }
+    void createAuthToken(AuthData authToken) throws DataAccessException ;
 
-    public AuthData getAuthToken(String token){
-        AuthData authData = authTokens.get(token);
-        return authData;
-    }
+    AuthData getAuthToken(String token);
 
-    public String getUsername(String token) {
-        AuthData authData = authTokens.get(token);
-        if (authData == null || authData.username() == null){
-            return null;
-        }
-        return authData.username();
-    }
+    String getUsername(String token) ;
 
-    public boolean isEmpty(){
-        return authTokens.isEmpty();
-    }
+    boolean isEmpty();
 
-    public void clearAuthTokens(){
-        authTokens.clear();
-    }
+    void clearAuthTokens();
 
-    public void deleteAuthToken(String token) throws DataAccessException {
-        if (!authTokens.containsKey(token)){
-            throw new DataAccessException("AuthToken does not exist", e);
-        }
-        authTokens.remove(token);
-    }
+    void deleteAuthToken(String token) throws DataAccessException ;
 }

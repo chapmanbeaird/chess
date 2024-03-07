@@ -2,20 +2,24 @@ package ServiceTests;
 
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
+import dataAccess.MemoryGameDAO;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.ListGamesService;
+
 import java.util.List;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ListGamesTest {
     private ListGamesService listGamesService;
     private GameDAO gameDAO;
 
     @BeforeEach
-    public void setUp() {
-        gameDAO = new GameDAO();
+    public void setUp() throws DataAccessException {
+        gameDAO = new MemoryGameDAO();
         listGamesService = new ListGamesService(gameDAO);
 
         // Clearing existing games to start fresh for each test

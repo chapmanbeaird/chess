@@ -1,18 +1,18 @@
 package service;
 
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.mysqlAuthDAO;
-import dataAccess.mysqlUserDAO;
+import dataAccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 
 import java.util.UUID;
 
 public class LoginService {
-    private final mysqlUserDAO userDAO;
-    private final mysqlAuthDAO authDAO;
+    private final UserDAO userDAO;
+    private final AuthDAO authDAO;
 
-    public LoginService(mysqlUserDAO userDAO, mysqlAuthDAO authDAO) {
+    public LoginService(UserDAO userDAO, AuthDAO authDAO) {
         this.userDAO = userDAO;
         this.authDAO = authDAO;
     }

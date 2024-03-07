@@ -1,12 +1,12 @@
 package service;
 
+import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.mysqlAuthDAO;
 
 public class LogoutService {
-    private final mysqlAuthDAO authDAO;
+    private final AuthDAO authDAO;
 
-    public LogoutService(mysqlAuthDAO authDAO) {
+    public LogoutService(AuthDAO authDAO) {
         this.authDAO = authDAO;
     }
 

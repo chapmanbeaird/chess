@@ -1,16 +1,16 @@
 package service;
 
 import dataAccess.DataAccessException;
-import dataAccess.mysqlGameDAO;
+import dataAccess.GameDAO;
 import model.GameData;
 
 import java.util.Random;
 
 public class CreateGameService {
-    private mysqlGameDAO gameDAO;
+    private GameDAO gameDAO;
     private static final Random random = new Random();
 
-    public CreateGameService(mysqlGameDAO gameDAO) {
+    public CreateGameService(GameDAO gameDAO) {
         this.gameDAO = gameDAO;
     }
 

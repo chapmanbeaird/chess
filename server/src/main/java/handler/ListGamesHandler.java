@@ -1,7 +1,7 @@
 package handler;
 
 import com.google.gson.Gson;
-import dataAccess.mysqlAuthDAO;
+import dataAccess.AuthDAO;
 import model.AuthData;
 import model.GameData;
 import service.ListGamesService;
@@ -14,9 +14,9 @@ import java.util.List;
 public class ListGamesHandler implements Route {
     private ListGamesService listGamesService;
     private Gson gson;
-    private mysqlAuthDAO authDAO;
+    private AuthDAO authDAO;
 
-    public ListGamesHandler(ListGamesService listGamesService, Gson gson, mysqlAuthDAO authDAO) {
+    public ListGamesHandler(ListGamesService listGamesService, Gson gson, AuthDAO authDAO) {
         this.listGamesService = listGamesService;
         this.gson = gson;
         this.authDAO = authDAO;

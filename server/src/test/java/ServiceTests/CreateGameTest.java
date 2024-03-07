@@ -1,13 +1,15 @@
 package ServiceTests;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
+import dataAccess.MemoryGameDAO;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import chess.ChessGame;
 import service.CreateGameService;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CreateGameTest {
     private CreateGameService createGameService;
@@ -15,7 +17,7 @@ public class CreateGameTest {
 
     @BeforeEach
     public void setUp() {
-        gameDAO = new GameDAO();
+        gameDAO = new MemoryGameDAO();
         createGameService = new CreateGameService(gameDAO);
     }
 

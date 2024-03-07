@@ -1,14 +1,13 @@
 package ServiceTests;
 
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
+import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 import service.JoinGameService;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class JoinGameTest {
     private JoinGameService joinGameService;
@@ -16,9 +15,9 @@ public class JoinGameTest {
     private AuthDAO authDAO;
 
     @BeforeEach
-    public void setUp() {
-        gameDAO = new GameDAO();
-        authDAO = new AuthDAO();
+    public void setUp() throws DataAccessException {
+        gameDAO = new MemoryGameDAO();
+        authDAO = new MemoryAuthDAO();
         joinGameService = new JoinGameService(gameDAO, authDAO);
 
         gameDAO.clearGames();

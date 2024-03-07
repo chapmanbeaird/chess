@@ -10,7 +10,7 @@ import java.sql.SQLException;
 
 
 public class MysqlUserDAO implements UserDAO{
-    private final static String CREATE_USER = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+    private final static String CREATE_USER = "INSERT INTO users (username, password, email) VALUES (?, ?, ?)";
     private final static String GET_USER = "SELECT * FROM users WHERE username = ?";
     private final static String CHECK_EMAIL = "SELECT * FROM users WHERE email = ?";
     private final static String CHECK_USERNAME = "SELECT * FROM users WHERE username = ?";
@@ -60,18 +60,21 @@ public class MysqlUserDAO implements UserDAO{
     }
 
     public boolean isEmailUsed(String email) throws DataAccessException {
-        // Use SQL SELECT statement to check if email is used
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(CHECK_EMAIL)) {
+            System.out.println("Checking if email is used: " + email);
 
             stmt.setString(1, email);
-            ResultSet rs = stmt.executeQuery();
-            return rs.next();
-
-        } catch (SQLException | DataAccessException e) {
-            throw new DataAccessException("Error encountered while checking email", e);
+            try (ResultSet rs = stmt.executeQuery()) {
+                boolean emailExists = rs.next();
+                System.out.println("Is email used: " + emailExists);
+                return emailExists;
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("Error encountered while checking if email is used: " + email, e);
         }
     }
+
 
     public boolean isUsernameUsed(String username) throws DataAccessException {
         // Use SQL SELECT statement to check if username is used
@@ -97,9 +100,9 @@ public class MysqlUserDAO implements UserDAO{
 
             if (rs.next()) {
                 String user = rs.getString("username");
-                String email = rs.getString("email");
                 String password = rs.getString("password");
-                return new UserData(user, email, password);
+                String email = rs.getString("email");
+                return new UserData(user, password, email);
             } else {
                 return null;
             }

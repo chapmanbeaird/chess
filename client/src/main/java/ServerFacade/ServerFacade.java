@@ -40,11 +40,11 @@ public class ServerFacade {
         return makeRequest("POST", "/creategame", new GameData(-1, null, null, gameName, null), GameData.class);
     }
 
-    public GameData joinGame(int gameId, String playerColor) throws ServerFacadeException {
+    public GameData joinGame(int gameId, String playerColor, String authToken) throws ServerFacadeException {
         Map<String, Object> joinGameRequest = new HashMap<>();
         joinGameRequest.put("gameId", gameId);
         joinGameRequest.put("playerColor", playerColor);
-        joinGameRequest.put("authToken", authToken); // Assuming the server requires an auth token for this action
+        joinGameRequest.put("authToken", authToken);
 
         return makeRequest("POST", "/joingame", joinGameRequest, GameData.class);
     }

@@ -1,6 +1,9 @@
 package ui;
 
 import ServerFacade.ServerFacade;
+import model.GameData;
+
+import java.util.List;
 import java.util.Scanner;
 public class PostloginUI {
     private ServerFacade serverFacade;
@@ -47,20 +50,63 @@ public class PostloginUI {
     }
 
     private void createGame() {
-        // Implement game creation logic
+        System.out.println("Enter a name for the new game:");
+        String gameName = scanner.nextLine();
+
+        try {
+            GameData gameData = serverFacade.createGame(gameName);
+            System.out.println("Game created successfully with ID: " + gameData.gameID());
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Error creating game: " + e.getMessage());
+        }
     }
+
 
     private void joinGame() {
-        // Implement game joining logic
+        System.out.println("Enter the ID of the game you want to join:");
+        int gameId = Integer.parseInt(scanner.nextLine());
+
+        System.out.println("Choose your color (white/black):");
+        String playerColor = scanner.nextLine();
+
+        try {
+            GameData gameData = serverFacade.joinGame(gameId, playerColor, authToken);
+            System.out.println("Joined game " + gameData.gameName() + " as " + playerColor);
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Error joining game: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid game ID format. Please enter a numeric ID.");
+        }
     }
+
 
     private void listGames() {
-        // Implement game listing logic
+        try {
+            List<GameData> games = serverFacade.listGames();
+            if (games.isEmpty()) {
+                System.out.println("There are no active games at the moment.");
+            } else {
+                System.out.println("Active games:");
+                for (GameData game : games) {
+                    System.out.println("ID: " + game.gameID() + ", Name: " + game.gameName() +
+                            ", White: " + game.whiteUsername() + ", Black: " + game.blackUsername());
+                }
+            }
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Error listing games: " + e.getMessage());
+        }
     }
 
+
     private void logout() {
-        // Implement logout logic using serverFacade.logout
+        try {
+            serverFacade.logout(authToken);
+            System.out.println("You have been logged out.");
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Failed to logout: " + e.getMessage());
+        }
     }
+
 
     private void help() {
         System.out.println("Available commands:");

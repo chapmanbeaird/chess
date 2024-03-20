@@ -25,55 +25,75 @@ public class ServerFacade {
     }
 
     public AuthData register(UserData userData) throws ServerFacadeException {
-        return makeRequest("POST", "/user", userData, AuthData.class);
+        return makeRequest("POST", "/user", userData, AuthData.class, null);
     }
 
     public AuthData login(String username, String password) throws ServerFacadeException {
-        return makeRequest("POST", "/session", new UserData(username, password, null), AuthData.class);
+        return makeRequest("POST", "/session", new UserData(username, password, null), AuthData.class, null);
     }
 
-    public List<GameData> listGames() throws ServerFacadeException {
-        return List.of(makeRequest("GET", "/game", null, GameData[].class)); // Wrapping array in List
+    public List<GameData> listGames(String authToken) throws ServerFacadeException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", authToken);
+        GameListResponse response = makeRequest("GET", "/game", null, GameListResponse.class, headers);
+        return response.getGames(); // This extracts the list from the response object.
     }
 
-    public GameData createGame(String gameName) throws ServerFacadeException {
-        return makeRequest("POST", "/game", new GameData(-1, null, null, gameName, null), GameData.class);
+
+
+    public GameData createGame(String gameName, String authToken) throws ServerFacadeException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", authToken);
+        Map<String, String> requestBody = new HashMap<>();
+        requestBody.put("gameName", gameName);
+        return makeRequest("POST", "/game", requestBody, GameData.class, headers);
     }
 
-    public GameData joinGame(int gameId, String playerColor, String authToken) throws ServerFacadeException {
+
+
+    public GameData joinGame(int gameID, String playerColor, String authToken) throws ServerFacadeException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", authToken);
         Map<String, Object> joinGameRequest = new HashMap<>();
-        joinGameRequest.put("gameId", gameId);
         joinGameRequest.put("playerColor", playerColor);
-        joinGameRequest.put("authToken", authToken);
-
-        return makeRequest("POST", "/game", joinGameRequest, GameData.class);
+        joinGameRequest.put("gameID", gameID);
+        return makeRequest("PUT", "/game", joinGameRequest, GameData.class, headers);
     }
 
-    public GameData joinGameAsObserver(int gameId, String authToken) throws ServerFacadeException {
+
+    public GameData joinGameAsObserver(int gameID, String authToken) throws ServerFacadeException {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", authToken);
         Map<String, Object> joinObserverRequest = new HashMap<>();
-        joinObserverRequest.put("gameId", gameId);
-        joinObserverRequest.put("authToken", authToken);
-        return makeRequest("POST", "/game", joinObserverRequest, GameData.class);
+        joinObserverRequest.put("gameID", gameID);
+        return makeRequest("PUT", "/game", joinObserverRequest, GameData.class, headers);
     }
+
 
 
     public void logout(String authToken) throws ServerFacadeException {
-        Map<String, String> logoutRequest = new HashMap<>();
-        logoutRequest.put("authToken", authToken);
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", authToken);
+        makeRequest("DELETE", "/session", null, Void.class, headers);
+    }
 
-        makeRequest("POST", "/session", logoutRequest, Void.class);    }
 
-    private <T> T makeRequest(String method, String path, Object requestData, Class<T> responseClass) throws ServerFacadeException {
+    private <T> T makeRequest(String method, String path, Object requestData, Class<T> responseClass, Map<String, String> headers) throws ServerFacadeException {
         try {
             URL url = new URI(serverBaseUrl + path).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
+            if (headers != null) {
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    http.setRequestProperty(header.getKey(), header.getValue());
+                }
+            }
             if (requestData != null) {
                 http.setDoOutput(true);
                 http.addRequestProperty("Content-Type", "application/json");
                 try (OutputStream os = http.getOutputStream()) {
-                    byte[] input = gson.toJson(requestData).getBytes("utf-8");
-                    os.write(input, 0, input.length);
+                    var input = gson.toJson(requestData);
+                    os.write(input.getBytes("utf-8"));
                 }
             }
             http.connect();
@@ -98,11 +118,27 @@ public class ServerFacade {
         }
     }
 
+
+
     // Exception class for handling ServerFacade-related errors
     public static class ServerFacadeException extends Exception {
         public ServerFacadeException(String message, Throwable cause) {
             super(message, cause);
         }
     }
+
+    public class GameListResponse {
+        private List<GameData> games;
+
+        // Getters and setters
+        public List<GameData> getGames() {
+            return games;
+        }
+
+        public void setGames(List<GameData> games) {
+            this.games = games;
+        }
+    }
+
 
 }

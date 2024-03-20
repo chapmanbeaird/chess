@@ -24,7 +24,7 @@ public class PostloginUI {
             System.out.println("3. List Games");
             System.out.println("4. Logout");
             System.out.println("5. Help");
-            System.out.println("6. Observe Game"); // New option for observing a game
+            System.out.println("6. Observe Game");
             System.out.print("Select an option: ");
             String option = scanner.nextLine();
 
@@ -44,7 +44,7 @@ public class PostloginUI {
                 case "5":
                     help();
                     break;
-                case "6": // New case for observing a game
+                case "6":
                     observeGame();
                     break;
                 default:
@@ -59,7 +59,7 @@ public class PostloginUI {
         String gameName = scanner.nextLine();
 
         try {
-            GameData gameData = serverFacade.createGame(gameName);
+            GameData gameData = serverFacade.createGame(gameName, authToken);
             System.out.println("Game created successfully with ID: " + gameData.gameID());
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error creating game: " + e.getMessage());
@@ -69,25 +69,46 @@ public class PostloginUI {
 
     private void joinGame() {
         System.out.println("Enter the ID of the game you want to join:");
-        int gameId = Integer.parseInt(scanner.nextLine());
-
-        System.out.println("Choose your color (white/black):");
-        String playerColor = scanner.nextLine();
-
+        int gameId;
         try {
-            GameData gameData = serverFacade.joinGame(gameId, playerColor, authToken);
-            System.out.println("Joined game " + gameData.gameName() + " as " + playerColor);
-        } catch (ServerFacade.ServerFacadeException e) {
-            System.err.println("Error joining game: " + e.getMessage());
+            gameId = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
             System.err.println("Invalid game ID format. Please enter a numeric ID.");
+            return; // Exit the method if the game ID is not a valid number
+        }
+
+        System.out.println("Choose your color:");
+        System.out.println("1. White");
+        System.out.println("2. Black");
+        String playerColor = scanner.nextLine();
+
+        // Convert numeric input to color
+        String color;
+        switch (playerColor) {
+            case "1":
+                color = "WHITE";
+                break;
+            case "2":
+                color = "BLACK";
+                break;
+            default:
+                System.err.println("Invalid option. Please enter 1 for White or 2 for Black.");
+                return;
+
+        }
+        try {
+            GameData gameData = serverFacade.joinGame(gameId, color, authToken);
+            System.out.println("Joined game " + gameId + " as " + color);
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Error joining game: " + e.getMessage());
         }
     }
 
 
+
     private void listGames() {
         try {
-            List<GameData> games = serverFacade.listGames();
+            List<GameData> games = serverFacade.listGames(authToken);
             if (games.isEmpty()) {
                 System.out.println("There are no active games at the moment.");
             } else {
@@ -134,5 +155,6 @@ public class PostloginUI {
         System.out.println("List Games - Show all available games.");
         System.out.println("Logout - Log out of your account.");
         System.out.println("Help - Show this help message.");
+        System.out.println("Observe Game - Join a game as an observer");
     }
 }

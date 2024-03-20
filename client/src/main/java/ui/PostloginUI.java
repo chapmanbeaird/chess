@@ -3,12 +3,16 @@ package ui;
 import ServerFacade.ServerFacade;
 import model.GameData;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 public class PostloginUI {
     private ServerFacade serverFacade;
     private Scanner scanner;
     private String authToken;
+    private Map<Integer, Integer> gameIndexToIDMap = new HashMap<>();
+
 
     public PostloginUI(ServerFacade serverFacade, String authToken) {
         this.serverFacade = serverFacade;
@@ -62,19 +66,29 @@ public class PostloginUI {
             GameData gameData = serverFacade.createGame(gameName, authToken);
             System.out.println("Game created successfully with ID: " + gameData.gameID());
         } catch (ServerFacade.ServerFacadeException e) {
-            System.err.println("Error creating game: " + e.getMessage());
+            if(e.getMessage().contains("500")) {
+                System.err.println("Error creating game: The game name \"" + gameName + "\" is already taken. Please try a different name.");
+            } else {
+                System.err.println("Error creating game: " + e.getMessage());
+            }
         }
     }
 
 
     private void joinGame() {
-        System.out.println("Enter the ID of the game you want to join:");
-        int gameId;
+        System.out.println("Enter the number of the game you want to join:");
+        int gameIndex;
         try {
-            gameId = Integer.parseInt(scanner.nextLine());
+            gameIndex = Integer.parseInt(scanner.nextLine());
         } catch (NumberFormatException e) {
-            System.err.println("Invalid game ID format. Please enter a numeric ID.");
-            return; // Exit the method if the game ID is not a valid number
+            System.err.println("Invalid format. Please enter a numeric value.");
+            return;
+        }
+
+        Integer gameId = gameIndexToIDMap.get(gameIndex);
+        if (gameId == null) {
+            System.err.println("Invalid game number. Please enter a valid number.");
+            return;
         }
 
         System.out.println("Choose your color:");
@@ -115,9 +129,12 @@ public class PostloginUI {
                 System.out.println("There are no active games at the moment.");
             } else {
                 System.out.println("Active games:");
+                int index = 1;
                 for (GameData game : games) {
-                    System.out.println("ID: " + game.gameID() + ", Name: " + game.gameName() +
+                    System.out.println(index + ": Name: " + game.gameName() + ", ID: " + game.gameID() +
                             ", White: " + game.whiteUsername() + ", Black: " + game.blackUsername());
+                    gameIndexToIDMap.put(index, game.gameID());
+                    index++;
                 }
             }
         } catch (ServerFacade.ServerFacadeException e) {
@@ -126,8 +143,20 @@ public class PostloginUI {
     }
 
     private void observeGame() {
-        System.out.println("Enter the ID of the game you want to observe:");
-        int gameId = Integer.parseInt(scanner.nextLine());
+        System.out.println("Enter the number of the game you want to join:");
+        int gameIndex;
+        try {
+            gameIndex = Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid format. Please enter a numeric value.");
+            return;
+        }
+
+        Integer gameId = gameIndexToIDMap.get(gameIndex);
+        if (gameId == null) {
+            System.err.println("Invalid game number. Please enter a valid number.");
+            return;
+        }
 
         try {
             GameData gameData = serverFacade.joinGameAsObserver(gameId, authToken);

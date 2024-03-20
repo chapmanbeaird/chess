@@ -62,12 +62,10 @@ public class MysqlUserDAO implements UserDAO{
     public boolean isEmailUsed(String email) throws DataAccessException {
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement stmt = conn.prepareStatement(CHECK_EMAIL)) {
-            System.out.println("Checking if email is used: " + email);
 
             stmt.setString(1, email);
             try (ResultSet rs = stmt.executeQuery()) {
                 boolean emailExists = rs.next();
-                System.out.println("Is email used: " + emailExists);
                 return emailExists;
             }
         } catch (SQLException e) {

@@ -60,7 +60,9 @@ public class PreloginUI {
             AuthData authData = serverFacade.register(userData);
 
             if (authData != null && authData.authToken() != null) {
-                System.out.println("Registration successful. Auth token: " + authData.authToken());
+                System.out.println("Register successful.");
+                PostloginUI postloginUI = new PostloginUI(serverFacade, authData.authToken());
+                postloginUI.displayMenu();
             } else {
                 System.out.println("Registration failed. The username might already be taken or the email is in use.");
             }

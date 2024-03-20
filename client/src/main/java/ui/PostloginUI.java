@@ -99,6 +99,8 @@ public class PostloginUI {
         try {
             GameData gameData = serverFacade.joinGame(gameId, color, authToken);
             System.out.println("Joined game " + gameId + " as " + color);
+            PrintBoard.printChessBoards();
+
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error joining game: " + e.getMessage());
         }
@@ -130,6 +132,7 @@ public class PostloginUI {
         try {
             GameData gameData = serverFacade.joinGameAsObserver(gameId, authToken);
             System.out.println("Now observing game " + gameData.gameName());
+            PrintBoard.printChessBoards();
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error joining game as observer: " + e.getMessage());
         } catch (NumberFormatException e) {

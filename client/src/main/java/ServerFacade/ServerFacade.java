@@ -25,19 +25,19 @@ public class ServerFacade {
     }
 
     public AuthData register(UserData userData) throws ServerFacadeException {
-        return makeRequest("POST", "/register", userData, AuthData.class);
+        return makeRequest("POST", "/user", userData, AuthData.class);
     }
 
     public AuthData login(String username, String password) throws ServerFacadeException {
-        return makeRequest("POST", "/login", new UserData(username, password, null), AuthData.class);
+        return makeRequest("POST", "/session", new UserData(username, password, null), AuthData.class);
     }
 
     public List<GameData> listGames() throws ServerFacadeException {
-        return List.of(makeRequest("GET", "/listgames", null, GameData[].class)); // Wrapping array in List
+        return List.of(makeRequest("GET", "/game", null, GameData[].class)); // Wrapping array in List
     }
 
     public GameData createGame(String gameName) throws ServerFacadeException {
-        return makeRequest("POST", "/creategame", new GameData(-1, null, null, gameName, null), GameData.class);
+        return makeRequest("POST", "/game", new GameData(-1, null, null, gameName, null), GameData.class);
     }
 
     public GameData joinGame(int gameId, String playerColor, String authToken) throws ServerFacadeException {
@@ -46,14 +46,22 @@ public class ServerFacade {
         joinGameRequest.put("playerColor", playerColor);
         joinGameRequest.put("authToken", authToken);
 
-        return makeRequest("POST", "/joingame", joinGameRequest, GameData.class);
+        return makeRequest("POST", "/game", joinGameRequest, GameData.class);
     }
+
+    public GameData joinGameAsObserver(int gameId, String authToken) throws ServerFacadeException {
+        Map<String, Object> joinObserverRequest = new HashMap<>();
+        joinObserverRequest.put("gameId", gameId);
+        joinObserverRequest.put("authToken", authToken);
+        return makeRequest("POST", "/game", joinObserverRequest, GameData.class);
+    }
+
 
     public void logout(String authToken) throws ServerFacadeException {
         Map<String, String> logoutRequest = new HashMap<>();
         logoutRequest.put("authToken", authToken);
 
-        makeRequest("POST", "/logout", logoutRequest, Void.class);    }
+        makeRequest("POST", "/session", logoutRequest, Void.class);    }
 
     private <T> T makeRequest(String method, String path, Object requestData, Class<T> responseClass) throws ServerFacadeException {
         try {

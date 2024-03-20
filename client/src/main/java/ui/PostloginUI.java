@@ -24,6 +24,7 @@ public class PostloginUI {
             System.out.println("3. List Games");
             System.out.println("4. Logout");
             System.out.println("5. Help");
+            System.out.println("6. Observe Game"); // New option for observing a game
             System.out.print("Select an option: ");
             String option = scanner.nextLine();
 
@@ -43,11 +44,15 @@ public class PostloginUI {
                 case "5":
                     help();
                     break;
+                case "6": // New case for observing a game
+                    observeGame();
+                    break;
                 default:
                     System.out.println("Invalid option. Please try again.");
             }
         }
     }
+
 
     private void createGame() {
         System.out.println("Enter a name for the new game:");
@@ -94,6 +99,20 @@ public class PostloginUI {
             }
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error listing games: " + e.getMessage());
+        }
+    }
+
+    private void observeGame() {
+        System.out.println("Enter the ID of the game you want to observe:");
+        int gameId = Integer.parseInt(scanner.nextLine());
+
+        try {
+            GameData gameData = serverFacade.joinGameAsObserver(gameId, authToken);
+            System.out.println("Now observing game " + gameData.gameName());
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Error joining game as observer: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.err.println("Invalid game ID format. Please enter a numeric ID.");
         }
     }
 

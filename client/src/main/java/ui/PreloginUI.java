@@ -105,5 +105,6 @@ public class PreloginUI {
 
     private void quit() {
         System.out.println("Exiting the application...");
+        return;
     }
 }

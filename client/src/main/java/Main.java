@@ -27,5 +27,7 @@ public class Main {
         // Display the pre-login menu
         preloginUI.displayMenu();
 
+        server.stop();
+
     }
 }

@@ -25,6 +25,18 @@ public class ServerFacade {
     }
 
     public AuthData register(UserData userData) throws ServerFacadeException {
+        if (userData == null) {
+            throw new ServerFacadeException("User data cannot be null.", null);
+        }
+        if (userData.username() == null || userData.username().trim().isEmpty()) {
+            throw new ServerFacadeException("Username cannot be empty.", null);
+        }
+        if (userData.password() == null || userData.password().trim().isEmpty()) {
+            throw new ServerFacadeException("Password cannot be empty.", null);
+        }
+        if (userData.email() == null || !isValidEmail(userData.email())) {
+            throw new ServerFacadeException("Invalid email address.", null);
+        }
         return makeRequest("POST", "/user", userData, AuthData.class, null);
     }
 
@@ -76,6 +88,10 @@ public class ServerFacade {
         headers.put("Authorization", authToken);
         makeRequest("DELETE", "/session", null, Void.class, headers);
     }
+    public void clearDatabase() throws ServerFacadeException {
+        makeRequest("DELETE", "/db", null, Void.class, null);
+    }
+
 
 
     private <T> T makeRequest(String method, String path, Object requestData, Class<T> responseClass, Map<String, String> headers) throws ServerFacadeException {
@@ -125,6 +141,10 @@ public class ServerFacade {
         public ServerFacadeException(String message, Throwable cause) {
             super(message, cause);
         }
+    }
+    private boolean isValidEmail(String email) {
+        // Simple regex to check email validity
+        return email.matches("^[A-Za-z0-9+_.-]+@(.+)$");
     }
 
     public class GameListResponse {

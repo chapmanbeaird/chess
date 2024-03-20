@@ -131,7 +131,7 @@ public class PostloginUI {
 
         try {
             GameData gameData = serverFacade.joinGameAsObserver(gameId, authToken);
-            System.out.println("Now observing game " + gameData.gameName());
+            System.out.println("Now observing game " + gameId);
             PrintBoard.printChessBoards();
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error joining game as observer: " + e.getMessage());

@@ -62,7 +62,7 @@ public class ServerMessage {
     /**
      * Message sent by the server to indicate an error.
      */
-    public class ErrorMessage extends ServerMessage {
+    public static class ErrorMessage extends ServerMessage {
         private String errorMessage;
 
         public ErrorMessage(String errorMessage) {

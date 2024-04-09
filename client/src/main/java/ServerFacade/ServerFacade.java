@@ -94,7 +94,7 @@ public class ServerFacade {
 
 
 
-    private <T> T makeRequest(String method, String path, Object requestData, Class<T> responseClass, Map<String, String> headers) throws ServerFacadeException {
+    public <T> T makeRequest(String method, String path, Object requestData, Class<T> responseClass, Map<String, String> headers) throws ServerFacadeException {
         try {
             URL url = new URI(serverBaseUrl + path).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();

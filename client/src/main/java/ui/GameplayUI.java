@@ -1,7 +1,9 @@
 package ui;
 
 import ServerFacade.ServerFacade;
+import model.GameData;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class GameplayUI {
@@ -58,21 +60,45 @@ public class GameplayUI {
     }
 
     private void redrawChessBoard() {
-        // This should request the current game state from the server and redraw the board
-        // For now, just simulate this by calling PrintBoard.printChessBoards();
-        PrintBoard.printChessBoards();
+
     }
 
     private void makeMove() {
-        // Implementation here
-    }
-
-    private void highlightLegalMoves() {
-        // Implementation here
+        System.out.println("Enter your move:");
+        String move = scanner.nextLine();
+        try {
+            serverFacade.makeMove(gameId, move, authToken);
+            System.out.println("Move made successfully.");
+            redrawChessBoard(); // This method should fetch the latest game state and display it.
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Failed to make move: " + e.getMessage());
+        }
     }
 
     private void resign() {
-        // Implementation here
+        System.out.println("Are you sure you want to resign? (Y/N)");
+        String input = scanner.nextLine();
+        if (input.equalsIgnoreCase("Y")) {
+            try {
+                serverFacade.resignGame(gameId, authToken);
+                System.out.println("You have resigned from the game.");
+                leave();
+            } catch (ServerFacade.ServerFacadeException e) {
+                System.err.println("Failed to resign: " + e.getMessage());
+            }
+        }
+    }
+
+    private void highlightLegalMoves() {
+        System.out.println("Enter the position of the piece to highlight legal moves:");
+        String position = scanner.nextLine();
+        try {
+            List<String> moves = serverFacade.highlightLegalMoves(gameId, position, authToken);
+            moves.forEach(move -> System.out.println("Legal move: " + move));
+            // Implement how to highlight these moves
+        } catch (ServerFacade.ServerFacadeException e) {
+            System.err.println("Failed to highlight moves: " + e.getMessage());
+        }
     }
 
     private void leave() {

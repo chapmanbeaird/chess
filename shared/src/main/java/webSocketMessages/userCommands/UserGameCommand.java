@@ -68,7 +68,7 @@ public class UserGameCommand {
             return gameID;
         }
 
-        public ChessGame.TeamColor getPlayerColor() {
+        public String getPlayerColor() {
             return playerColor;
         }
     }

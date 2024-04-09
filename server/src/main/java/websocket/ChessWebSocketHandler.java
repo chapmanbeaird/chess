@@ -1,20 +1,20 @@
 package websocket;
 
 import com.google.gson.Gson;
+import service.JoinGameService;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.OnMessage;
 import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/chess")
 public class ChessWebSocketHandler {
 
     private final Gson gson = new Gson();
+    private final JoinGameService joinGameService;
 
-    public ChessWebSocketHandler() {
-        // Initialization logic here, if necessary
+    public ChessWebSocketHandler(JoinGameService joinGameService) {
+        this.joinGameService = joinGameService;
     }
 
     @OnMessage
@@ -48,9 +48,7 @@ public class ChessWebSocketHandler {
     }
 
     private void handleJoinPlayer(Session session, UserGameCommand command) {
-        // Logic to handle player joining a game
     }
-
     private void handleJoinObserver(Session session, UserGameCommand command) {
         // Logic to handle observer joining a game
     }

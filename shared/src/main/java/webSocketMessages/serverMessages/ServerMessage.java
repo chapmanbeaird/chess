@@ -45,7 +45,7 @@ public class ServerMessage {
     /**
      * Message sent by the server to load the current game state.
      */
-    public class LoadGameMessage extends ServerMessage {
+    public static class LoadGameMessage extends ServerMessage {
         private ChessGame game;
 
         public LoadGameMessage(ChessGame game) {

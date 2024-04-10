@@ -17,7 +17,7 @@ import javax.websocket.OnMessage;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
-@ServerEndpoint(value = "/chess")
+@ServerEndpoint(value = "/connect")
 public class ChessWebSocketHandler {
 
     private final Gson gson = new Gson();

@@ -1,8 +1,15 @@
 package ui;
 
 import ServerFacade.ServerFacade;
+import Websocket.ClientChessMessageHandler;
+import Websocket.WebSocketClient;
+import chess.ChessGame;
 import model.GameData;
+import webSocketMessages.userCommands.UserGameCommand;
 
+import javax.websocket.DeploymentException;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,11 +119,34 @@ public class PostloginUI {
         }
         try {
             GameData gameData = serverFacade.joinGame(gameId, color, authToken);
+            WebSocketClient.ChessMessageHandler handler = new ClientChessMessageHandler();
+            String wsUrl = "ws://localhost:8080";
+            WebSocketClient webSocketClient = new WebSocketClient(wsUrl, handler);
+            UserGameCommand.JoinPlayerCommand joinCommand;
+            boolean isPlayerWhite;
+            if (color == "WHITE"){
+                joinCommand = new UserGameCommand.JoinPlayerCommand(authToken, gameId, ChessGame.TeamColor.WHITE);
+                isPlayerWhite = true;
+            }
+            else{
+                joinCommand = new UserGameCommand.JoinPlayerCommand(authToken, gameId, ChessGame.TeamColor.BLACK);
+                isPlayerWhite = false;
+
+            }
+            webSocketClient.sendUserGameCommand(joinCommand);
             System.out.println("Joined game " + gameId + " as " + color);
             PrintBoard.printChessBoards();
+            GameplayUI gameplayUI = new GameplayUI(serverFacade, authToken, gameId, isPlayerWhite);
+            gameplayUI.displayMenu();
 
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error joining game: " + e.getMessage());
+        } catch (DeploymentException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -160,12 +190,29 @@ public class PostloginUI {
 
         try {
             GameData gameData = serverFacade.joinGameAsObserver(gameId, authToken);
+
+            // Initialize WebSocket connection for observing the game
+            WebSocketClient.ChessMessageHandler handler = new ClientChessMessageHandler();
+            String wsUrl = "ws://localhost:8080";
+            WebSocketClient webSocketClient = new WebSocketClient(wsUrl, handler);
+
+            // Send join observer command via WebSocket
+            UserGameCommand.JoinObserverCommand joinObserverCommand = new UserGameCommand.JoinObserverCommand(authToken, gameId);
+            webSocketClient.sendUserGameCommand(joinObserverCommand);
+
             System.out.println("Now observing game " + gameId);
             PrintBoard.printChessBoards();
+
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error joining game as observer: " + e.getMessage());
         } catch (NumberFormatException e) {
             System.err.println("Invalid game ID format. Please enter a numeric ID.");
+        } catch (DeploymentException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

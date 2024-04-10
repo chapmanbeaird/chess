@@ -53,7 +53,7 @@ public class UserGameCommand {
     }
 
     //Command to join as a player with a specific color.
-    public class JoinPlayerCommand extends UserGameCommand {
+    public static class JoinPlayerCommand extends UserGameCommand {
         private int gameID;
         private ChessGame.TeamColor playerColor;
 
@@ -74,7 +74,7 @@ public class UserGameCommand {
     }
 
     //Command to join as an observer
-    public class JoinObserverCommand extends UserGameCommand {
+    public static class JoinObserverCommand extends UserGameCommand {
         private int gameID;
 
         public JoinObserverCommand(String authToken, int gameID) {

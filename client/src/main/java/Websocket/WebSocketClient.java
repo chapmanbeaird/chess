@@ -9,11 +9,16 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public abstract class WebSocketClient extends Endpoint {
+public class WebSocketClient extends Endpoint {
 
     private Session session;
     private Gson gson = new Gson();
     private ChessMessageHandler messageHandler;
+
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
+
+    }
 
     // Define an interface for handling incoming messages
     public interface ChessMessageHandler {
@@ -60,4 +65,6 @@ public abstract class WebSocketClient extends Endpoint {
     public void closeConnection() throws IOException {
         this.session.close();
     }
+
+
 }

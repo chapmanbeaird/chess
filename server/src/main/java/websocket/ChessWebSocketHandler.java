@@ -17,7 +17,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import webSocketMessages.serverMessages.ErrorMessage;
 import webSocketMessages.serverMessages.LoadGameMessage;
 import webSocketMessages.serverMessages.NotificationMessage;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 
@@ -36,7 +36,7 @@ public class ChessWebSocketHandler {
 
 
     @OnWebSocketMessage
-    public void onMessage(String message, Session session) {
+    public void onMessage(Session session, String message) {
         try {
             UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
 
@@ -80,12 +80,12 @@ public class ChessWebSocketHandler {
 
     private void handleJoinPlayer(Session session, UserGameCommand command) throws DataAccessException {
 
-        if (!(command instanceof UserGameCommand.JoinPlayerCommand)) {
+        if (!(command instanceof JoinPlayerCommand)) {
             sendErrorMessage(session, "Invalid command data for joining as a player.");
             return;
         }
 
-        UserGameCommand.JoinPlayerCommand joinCommand = (UserGameCommand.JoinPlayerCommand) command;
+        JoinPlayerCommand joinCommand = (JoinPlayerCommand) command;
         String authtoken = joinCommand.getAuthString();
         String playerName = authDao.getUsername(authtoken);
         try {
@@ -109,12 +109,12 @@ public class ChessWebSocketHandler {
         }
     }
     private void handleJoinObserver(Session session, UserGameCommand command) throws DataAccessException {
-        if (!(command instanceof UserGameCommand.JoinObserverCommand)) {
+        if (!(command instanceof JoinObserverCommand)) {
             sendErrorMessage(session, "Invalid command data for joining as an observer.");
             return;
         }
 
-        UserGameCommand.JoinObserverCommand joinCommand = (UserGameCommand.JoinObserverCommand) command;
+        JoinObserverCommand joinCommand = (JoinObserverCommand) command;
         String authtoken = joinCommand.getAuthString();
         String observerName = authDao.getUsername(authtoken);
 
@@ -134,12 +134,12 @@ public class ChessWebSocketHandler {
 
 
     private void handleMakeMove(Session session, UserGameCommand command) throws DataAccessException {
-        if (!(command instanceof UserGameCommand.MakeMoveCommand)) {
+        if (!(command instanceof MakeMoveCommand)) {
             sendErrorMessage(session, "Invalid command data for making a move.");
             return;
         }
 
-        UserGameCommand.MakeMoveCommand moveCommand = (UserGameCommand.MakeMoveCommand) command;
+        MakeMoveCommand moveCommand = (MakeMoveCommand) command;
         String authtoken = moveCommand.getAuthString();
         String playerName = authDao.getUsername(authtoken);
 
@@ -207,12 +207,12 @@ public class ChessWebSocketHandler {
 
 
     private void handleLeave(Session session, UserGameCommand command) throws DataAccessException {
-        if (!(command instanceof UserGameCommand.LeaveCommand)) {
+        if (!(command instanceof LeaveCommand)) {
             sendErrorMessage(session, "Invalid command data for leaving the game.");
             return;
         }
 
-        UserGameCommand.LeaveCommand leaveCommand = (UserGameCommand.LeaveCommand) command;
+        LeaveCommand leaveCommand = (LeaveCommand) command;
         String authtoken = leaveCommand.getAuthString();
         String playerName = authDao.getUsername(authtoken);
 
@@ -232,12 +232,12 @@ public class ChessWebSocketHandler {
 
 
     private void handleResign(Session session, UserGameCommand command) throws DataAccessException {
-        if (!(command instanceof UserGameCommand.ResignCommand)) {
+        if (!(command instanceof ResignCommand)) {
             sendErrorMessage(session, "Invalid command data for resigning from the game.");
             return;
         }
 
-        UserGameCommand.ResignCommand resignCommand = (UserGameCommand.ResignCommand) command;
+        ResignCommand resignCommand = (ResignCommand) command;
         String authtoken = resignCommand.getAuthString();
         String playerName = authDao.getUsername(authtoken);
 

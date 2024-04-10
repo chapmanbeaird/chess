@@ -5,7 +5,8 @@ import Websocket.ClientChessMessageHandler;
 import Websocket.WebSocketClient;
 import chess.ChessGame;
 import model.GameData;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.JoinObserverCommand;
+import webSocketMessages.userCommands.JoinPlayerCommand;
 
 import javax.websocket.DeploymentException;
 import java.io.IOException;
@@ -122,14 +123,14 @@ public class PostloginUI {
             WebSocketClient.ChessMessageHandler handler = new ClientChessMessageHandler();
             String wsUrl = "ws://localhost:8080";
             WebSocketClient webSocketClient = new WebSocketClient(wsUrl, handler);
-            UserGameCommand.JoinPlayerCommand joinCommand;
+            JoinPlayerCommand joinCommand;
             boolean isPlayerWhite;
             if (color == "WHITE"){
-                joinCommand = new UserGameCommand.JoinPlayerCommand(authToken, gameId, ChessGame.TeamColor.WHITE);
+                joinCommand = new JoinPlayerCommand(authToken, gameId, ChessGame.TeamColor.WHITE);
                 isPlayerWhite = true;
             }
             else{
-                joinCommand = new UserGameCommand.JoinPlayerCommand(authToken, gameId, ChessGame.TeamColor.BLACK);
+                joinCommand = new JoinPlayerCommand(authToken, gameId, ChessGame.TeamColor.BLACK);
                 isPlayerWhite = false;
 
             }
@@ -197,7 +198,7 @@ public class PostloginUI {
             WebSocketClient webSocketClient = new WebSocketClient(wsUrl, handler);
 
             // Send join observer command via WebSocket
-            UserGameCommand.JoinObserverCommand joinObserverCommand = new UserGameCommand.JoinObserverCommand(authToken, gameId);
+            JoinObserverCommand joinObserverCommand = new JoinObserverCommand(authToken, gameId);
             webSocketClient.sendUserGameCommand(joinObserverCommand);
 
             System.out.println("Now observing game " + gameId);

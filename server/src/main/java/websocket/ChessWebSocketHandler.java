@@ -10,14 +10,18 @@ import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
-import webSocketMessages.serverMessages.ServerMessage;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import webSocketMessages.serverMessages.ErrorMessage;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
-import javax.websocket.OnMessage;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 
-@ServerEndpoint(value = "/connect")
+@WebSocket
 public class ChessWebSocketHandler {
 
     private final Gson gson = new Gson();
@@ -31,7 +35,7 @@ public class ChessWebSocketHandler {
     }
 
 
-    @OnMessage
+    @OnWebSocketMessage
     public void onMessage(String message, Session session) {
         try {
             UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
@@ -61,6 +65,19 @@ public class ChessWebSocketHandler {
         }
     }
 
+    @OnWebSocketConnect
+    public void onConnect(Session session) {
+        System.out.println("New connection: " + session.getRemoteAddress().getAddress());
+    }
+
+    @OnWebSocketClose
+    public void onClose(Session session, int statusCode, String reason) {
+         //remove player from connection
+//        ChessConnectionManager manager = new ChessConnectionManager();
+//        manager.remove(session);
+        System.out.println("Connection closed: " + session.getRemoteAddress().getAddress() + ", Reason: " + reason);
+    }
+
     private void handleJoinPlayer(Session session, UserGameCommand command) throws DataAccessException {
 
         if (!(command instanceof UserGameCommand.JoinPlayerCommand)) {
@@ -78,9 +95,9 @@ public class ChessWebSocketHandler {
             // Send the updated game state to the player
             GameData updatedGame = gameDao.getGame(joinCommand.getGameID());
             if (updatedGame != null) {
-                session.getRemote().sendString(gson.toJson(new ServerMessage.LoadGameMessage(updatedGame.game())));
-                ServerMessage.NotificationMessage notificationMessage =
-                        new ServerMessage.NotificationMessage(playerName + " joined as " + joinCommand.getPlayerColor());
+                session.getRemote().sendString(gson.toJson(new LoadGameMessage(updatedGame.game())));
+                NotificationMessage notificationMessage =
+                        new NotificationMessage(playerName + " joined as " + joinCommand.getPlayerColor());
 
                 // Broadcast to all participants in the game, except the joining player
                 connectionManager.broadcast(joinCommand.getGameID(), playerName, notificationMessage);
@@ -106,8 +123,8 @@ public class ChessWebSocketHandler {
             connectionManager.add(joinCommand.getGameID(), session, observerName);
 
             // Broadcast to all participants in the game, including the new observer
-            ServerMessage.NotificationMessage notificationMessage =
-                    new ServerMessage.NotificationMessage(observerName + " is now observing the game.");
+            NotificationMessage notificationMessage =
+                    new NotificationMessage(observerName + " is now observing the game.");
             connectionManager.broadcast(joinCommand.getGameID(), observerName, notificationMessage);
 
         } catch (Exception e) {
@@ -175,11 +192,11 @@ public class ChessWebSocketHandler {
             }
 
             // Broadcast the move and game state to all participants
-            ServerMessage.LoadGameMessage loadGameMessage = new ServerMessage.LoadGameMessage(gameData.game());
+            LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.game());
             connectionManager.broadcast(moveCommand.getGameID(), playerName, loadGameMessage);
 
-            ServerMessage.NotificationMessage notificationMessage =
-                    new ServerMessage.NotificationMessage(moveMessage);
+            NotificationMessage notificationMessage =
+                    new NotificationMessage(moveMessage);
             connectionManager.broadcast(moveCommand.getGameID(), null, notificationMessage);
 
         } catch (Exception e) {
@@ -204,8 +221,8 @@ public class ChessWebSocketHandler {
             connectionManager.remove(leaveCommand.getGameID(), playerName);
 
             // Broadcast to all participants in the game that the player has left
-            ServerMessage.NotificationMessage notificationMessage =
-                    new ServerMessage.NotificationMessage(playerName + " has left the game.");
+            NotificationMessage notificationMessage =
+                    new NotificationMessage(playerName + " has left the game.");
             connectionManager.broadcast(leaveCommand.getGameID(), playerName, notificationMessage);
 
         } catch (Exception e) {
@@ -249,8 +266,8 @@ public class ChessWebSocketHandler {
 
             // Notify all clients that the game has ended due to resignation
             String notification = playerName + " has resigned. " + winner + " wins the game.";
-            ServerMessage.NotificationMessage notificationMessage =
-                    new ServerMessage.NotificationMessage(notification);
+            NotificationMessage notificationMessage =
+                    new NotificationMessage(notification);
             connectionManager.broadcast(resignCommand.getGameID(), null, notificationMessage);
 
         } catch (Exception e) {
@@ -261,7 +278,7 @@ public class ChessWebSocketHandler {
 
     private void sendErrorMessage(Session session, String errorMessage) {
         try {
-            ServerMessage.ErrorMessage error = new ServerMessage.ErrorMessage(errorMessage);
+            ErrorMessage error = new ErrorMessage(errorMessage);
             String jsonError = gson.toJson(error);
             session.getRemote().sendString(jsonError);
         } catch (IOException e) {

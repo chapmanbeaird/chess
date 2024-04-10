@@ -6,6 +6,7 @@ import handler.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import service.*;
 import spark.Spark;
+import websocket.ChessWebSocketHandler;
 
 import static spark.Spark.*;
 
@@ -43,6 +44,9 @@ public class Server {
         LoginService loginService = new LoginService(userDAO, authDAO, new BCryptPasswordEncoder());
         LogoutService logoutService = new LogoutService(authDAO);
         ListGamesService listGamesService = new ListGamesService(gameDAO);
+        ChessWebSocketHandler webSocketHandler = new ChessWebSocketHandler(gameDAO, authDAO);
+
+        Spark.webSocket("/connect", webSocketHandler);
 
         //Clear route
         delete("/db", new ClearHandler(clearService, gson));
@@ -64,6 +68,7 @@ public class Server {
 
         //List Games
         get("/game", new ListGamesHandler(listGamesService, gson, authDAO));
+
     }
     private void initializeDatabase() {
         InitializeDatabase dbInitializer = new InitializeDatabase();

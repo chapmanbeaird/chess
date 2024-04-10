@@ -1,6 +1,9 @@
 package Websocket;
 
 import chess.ChessGame;
+import webSocketMessages.serverMessages.ErrorMessage;
+import webSocketMessages.serverMessages.LoadGameMessage;
+import webSocketMessages.serverMessages.NotificationMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 
 public class ClientChessMessageHandler implements WebSocketClient.ChessMessageHandler {
@@ -9,18 +12,18 @@ public class ClientChessMessageHandler implements WebSocketClient.ChessMessageHa
         switch (message.getServerMessageType()) {
             case LOAD_GAME:
                 // Update your client's game state or UI with the new game data
-                ServerMessage.LoadGameMessage loadGameMessage = (ServerMessage.LoadGameMessage) message;
+                LoadGameMessage loadGameMessage = (LoadGameMessage) message;
                 ChessGame game = loadGameMessage.getGame();
                 updateGame(game);
                 break;
             case ERROR:
                 // Handle errors
-                ServerMessage.ErrorMessage errorMessage = (ServerMessage.ErrorMessage) message;
+                ErrorMessage errorMessage = (ErrorMessage) message;
                 showError(errorMessage.getErrorMessage());
                 break;
             case NOTIFICATION:
                 // Show notifications
-                ServerMessage.NotificationMessage notificationMessage = (ServerMessage.NotificationMessage) message;
+                NotificationMessage notificationMessage = (NotificationMessage) message;
                 showNotification(notificationMessage.getMessage());
                 break;
         }

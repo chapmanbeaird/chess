@@ -1,7 +1,5 @@
 package webSocketMessages.serverMessages;
 
-import chess.ChessGame;
-
 import java.util.Objects;
 
 /**
@@ -42,53 +40,4 @@ public class ServerMessage {
         return Objects.hash(getServerMessageType());
     }
 
-    /**
-     * Message sent by the server to load the current game state.
-     */
-    public static class LoadGameMessage extends ServerMessage {
-        private ChessGame game;
-
-        public LoadGameMessage(ChessGame game) {
-            super(ServerMessageType.LOAD_GAME);
-            this.game = game;
-        }
-
-        public ChessGame getGame() {
-            return game;
-        }
-
-    }
-
-    /**
-     * Message sent by the server to indicate an error.
-     */
-    public static class ErrorMessage extends ServerMessage {
-        private String errorMessage;
-
-        public ErrorMessage(String errorMessage) {
-            super(ServerMessageType.ERROR);
-            this.errorMessage = errorMessage;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
-
-    }
-
-    /**
-     * Notification message sent by the server to inform players of events.
-     */
-    public static class NotificationMessage extends ServerMessage {
-        private String message;
-
-        public NotificationMessage(String message) {
-            super(ServerMessageType.NOTIFICATION);
-            this.message = message;
-        }
-
-        public String getMessage() {
-            return message;
-        }
-    }
 }

@@ -62,6 +62,7 @@ public class WebSocketClient extends Endpoint {
     }
 
     // Close the WebSocket connection
+    @OnClose
     public void closeConnection() throws IOException {
         this.session.close();
     }

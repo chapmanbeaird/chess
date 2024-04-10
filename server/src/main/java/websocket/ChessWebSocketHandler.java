@@ -1,21 +1,31 @@
 package websocket;
 
 import com.google.gson.Gson;
-import service.JoinGameService;
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
+import model.GameData;
+import org.eclipse.jetty.websocket.api.Session;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.OnMessage;
-import javax.websocket.Session;
+import javax.websocket.server.ServerEndpoint;
+import java.io.IOException;
 
+@ServerEndpoint(value = "/chess")
 public class ChessWebSocketHandler {
 
     private final Gson gson = new Gson();
-    private final JoinGameService joinGameService;
+    private final GameDAO gameDao;
+    private final AuthDAO authDao;
+    private final ChessConnectionManager connectionManager = new ChessConnectionManager();
 
-    public ChessWebSocketHandler(JoinGameService joinGameService) {
-        this.joinGameService = joinGameService;
+    public ChessWebSocketHandler(GameDAO gameDao, AuthDAO authDao) {
+        this.gameDao = gameDao;
+        this.authDao = authDao;
     }
+
 
     @OnMessage
     public void onMessage(String message, Session session) {
@@ -47,7 +57,35 @@ public class ChessWebSocketHandler {
         }
     }
 
-    private void handleJoinPlayer(Session session, UserGameCommand command) {
+    private void handleJoinPlayer(Session session, UserGameCommand command) throws DataAccessException {
+
+        if (!(command instanceof UserGameCommand.JoinPlayerCommand)) {
+            sendErrorMessage(session, "Invalid command data for joining as a player.");
+            return;
+        }
+
+        UserGameCommand.JoinPlayerCommand joinCommand = (UserGameCommand.JoinPlayerCommand) command;
+        String authtoken = joinCommand.getAuthString();
+        String playerName = authDao.getUsername(authtoken);
+        try {
+            // Add player to the session manager
+            connectionManager.add(joinCommand.getGameID(), session, playerName);
+
+            // Send the updated game state to the player
+            GameData updatedGame = gameDao.getGame(joinCommand.getGameID());
+            if (updatedGame != null) {
+                session.getRemote().sendString(gson.toJson(new ServerMessage.LoadGameMessage(updatedGame.game())));
+                ServerMessage.NotificationMessage notificationMessage =
+                        new ServerMessage.NotificationMessage(playerName + " joined as " + joinCommand.getPlayerColor());
+
+                // Broadcast to all participants in the game, except the joining player
+                connectionManager.broadcast(joinCommand.getGameID(), playerName, notificationMessage);
+            } else {
+                sendErrorMessage(session, "Game not found.");
+            }
+        } catch (Exception e) {
+            sendErrorMessage(session, "Error processing join game: " + e.getMessage());
+        }
     }
     private void handleJoinObserver(Session session, UserGameCommand command) {
         // Logic to handle observer joining a game
@@ -66,10 +104,14 @@ public class ChessWebSocketHandler {
     }
 
     private void sendErrorMessage(Session session, String errorMessage) {
-        ServerMessage.ErrorMessage error = new ServerMessage.ErrorMessage(errorMessage);
-        String jsonError = gson.toJson(error);
-        session.getAsyncRemote().sendText(jsonError);
+        try {
+            ServerMessage.ErrorMessage error = new ServerMessage.ErrorMessage(errorMessage);
+            String jsonError = gson.toJson(error);
+            session.getRemote().sendString(jsonError);
+        } catch (IOException e) {
+            // Handle the case where the message could not be sent.
+            e.printStackTrace();
+        }
     }
 
-    // Additional utility methods for sending messages, handling game logic, etc., would go here
 }

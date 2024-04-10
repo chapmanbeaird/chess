@@ -29,7 +29,7 @@ public class UserGameCommand {
 
     private final String authToken;
 
-    public String getAuthString() {
+    public static String getAuthString() {
         return authToken;
     }
 
@@ -68,7 +68,7 @@ public class UserGameCommand {
             return gameID;
         }
 
-        public String getPlayerColor() {
+        public ChessGame.TeamColor getPlayerColor() {
             return playerColor;
         }
     }

@@ -1,16 +1,17 @@
 package websocket;
-
 import org.eclipse.jetty.websocket.api.Session;
-
 import java.io.IOException;
 
 public class Connection {
-    public String visitorName;
+    public Integer gameID;
     public Session session;
+    public String playerName;
 
-    public Connection(String visitorName, Session session) {
-        this.visitorName = visitorName;
+
+    public Connection(Integer gameID, Session session, String playerName) {
+        this.gameID = gameID;
         this.session = session;
+        this.playerName = playerName;
     }
 
     public void send(String msg) throws IOException {

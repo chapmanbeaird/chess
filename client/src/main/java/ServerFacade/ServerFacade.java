@@ -134,6 +134,15 @@ public class ServerFacade {
         }
     }
 
+    public void makeMove(int gameId, String move, String authToken) {
+    }
+
+    public void resignGame(int gameId, String authToken) {
+    }
+
+    public List<String> highlightLegalMoves(int gameId, String position, String authToken) {
+        return null;
+    }
 
 
     // Exception class for handling ServerFacade-related errors

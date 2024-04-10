@@ -1,7 +1,6 @@
 package ui;
 
 import ServerFacade.ServerFacade;
-import model.GameData;
 
 import java.util.List;
 import java.util.Scanner;
@@ -66,39 +65,27 @@ public class GameplayUI {
     private void makeMove() {
         System.out.println("Enter your move:");
         String move = scanner.nextLine();
-        try {
-            serverFacade.makeMove(gameId, move, authToken);
-            System.out.println("Move made successfully.");
-            redrawChessBoard(); // This method should fetch the latest game state and display it.
-        } catch (ServerFacade.ServerFacadeException e) {
-            System.err.println("Failed to make move: " + e.getMessage());
-        }
+        serverFacade.makeMove(gameId, move, authToken);
+        System.out.println("Move made successfully.");
+        redrawChessBoard(); // This method should fetch the latest game state and display it.
     }
 
     private void resign() {
         System.out.println("Are you sure you want to resign? (Y/N)");
         String input = scanner.nextLine();
         if (input.equalsIgnoreCase("Y")) {
-            try {
-                serverFacade.resignGame(gameId, authToken);
-                System.out.println("You have resigned from the game.");
-                leave();
-            } catch (ServerFacade.ServerFacadeException e) {
-                System.err.println("Failed to resign: " + e.getMessage());
-            }
+            serverFacade.resignGame(gameId, authToken);
+            System.out.println("You have resigned from the game.");
+            leave();
         }
     }
 
     private void highlightLegalMoves() {
         System.out.println("Enter the position of the piece to highlight legal moves:");
         String position = scanner.nextLine();
-        try {
-            List<String> moves = serverFacade.highlightLegalMoves(gameId, position, authToken);
-            moves.forEach(move -> System.out.println("Legal move: " + move));
-            // Implement how to highlight these moves
-        } catch (ServerFacade.ServerFacadeException e) {
-            System.err.println("Failed to highlight moves: " + e.getMessage());
-        }
+        List<String> moves = serverFacade.highlightLegalMoves(gameId, position, authToken);
+        moves.forEach(move -> System.out.println("Legal move: " + move));
+        // Implement how to highlight these moves
     }
 
     private void leave() {

@@ -79,7 +79,7 @@ public class ServerMessage {
     /**
      * Notification message sent by the server to inform players of events.
      */
-    public class NotificationMessage extends ServerMessage {
+    public static class NotificationMessage extends ServerMessage {
         private String message;
 
         public NotificationMessage(String message) {

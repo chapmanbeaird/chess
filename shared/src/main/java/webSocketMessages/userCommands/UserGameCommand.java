@@ -29,7 +29,7 @@ public class UserGameCommand {
 
     private final String authToken;
 
-    public static String getAuthString() {
+    public String getAuthString() {
         return authToken;
     }
 

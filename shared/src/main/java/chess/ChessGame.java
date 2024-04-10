@@ -15,6 +15,9 @@ public class ChessGame {
 
     private ChessPosition whiteKingPosition;
     private ChessPosition blackKingPosition;
+    private String winner = null;
+    private boolean gameOver = false;
+
 
     public ChessGame() {
         this.board = new ChessBoard();
@@ -53,6 +56,30 @@ public class ChessGame {
         WHITE,
         BLACK
     }
+
+
+    public void resign(TeamColor resigningTeam) {
+        if (gameOver) {
+            throw new IllegalStateException("The game is already over.");
+        }
+
+        // Determine the winner based on who is resigning
+        if (resigningTeam == TeamColor.WHITE) {
+            winner = "Black"; // Black wins if White resigns
+        } else if (resigningTeam == TeamColor.BLACK) {
+            winner = "White"; // White wins if Black resigns
+        }
+
+        gameOver = true;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+    public String getWinner() {
+        return winner;
+    }
+
 
     /**
      * Gets a valid moves for a piece at the given location

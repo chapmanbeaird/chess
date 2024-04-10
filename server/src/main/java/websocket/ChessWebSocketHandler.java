@@ -189,13 +189,75 @@ public class ChessWebSocketHandler {
 
 
 
-    private void handleLeave(Session session, UserGameCommand command) {
-        // Logic to handle a player or observer leaving the game
+    private void handleLeave(Session session, UserGameCommand command) throws DataAccessException {
+        if (!(command instanceof UserGameCommand.LeaveCommand)) {
+            sendErrorMessage(session, "Invalid command data for leaving the game.");
+            return;
+        }
+
+        UserGameCommand.LeaveCommand leaveCommand = (UserGameCommand.LeaveCommand) command;
+        String authtoken = leaveCommand.getAuthString();
+        String playerName = authDao.getUsername(authtoken);
+
+        try {
+            // Remove the player or observer from the session manager
+            connectionManager.remove(leaveCommand.getGameID(), playerName);
+
+            // Broadcast to all participants in the game that the player has left
+            ServerMessage.NotificationMessage notificationMessage =
+                    new ServerMessage.NotificationMessage(playerName + " has left the game.");
+            connectionManager.broadcast(leaveCommand.getGameID(), playerName, notificationMessage);
+
+        } catch (Exception e) {
+            sendErrorMessage(session, "Error processing leave: " + e.getMessage());
+        }
     }
 
-    private void handleResign(Session session, UserGameCommand command) {
-        // Logic to handle a player resigning from the game
+
+    private void handleResign(Session session, UserGameCommand command) throws DataAccessException {
+        if (!(command instanceof UserGameCommand.ResignCommand)) {
+            sendErrorMessage(session, "Invalid command data for resigning from the game.");
+            return;
+        }
+
+        UserGameCommand.ResignCommand resignCommand = (UserGameCommand.ResignCommand) command;
+        String authtoken = resignCommand.getAuthString();
+        String playerName = authDao.getUsername(authtoken);
+
+        try {
+            // Handle the resignation in the game logic
+            GameData gameData = gameDao.getGame(resignCommand.getGameID());
+            if (gameData == null) {
+                sendErrorMessage(session, "Game not found.");
+                return;
+            }
+
+            // Determine the team color of the resigning player
+            ChessGame.TeamColor resigningTeam = null;
+            if (gameData.whiteUsername().equals(playerName)) {
+                resigningTeam = ChessGame.TeamColor.WHITE;
+            } else if (gameData.blackUsername().equals(playerName)) {
+                resigningTeam = ChessGame.TeamColor.BLACK;
+            }
+
+            // Resign the game
+            gameData.game().resign(resigningTeam);
+            String winner = gameData.game().getWinner();
+
+            // Persist the updated game state and winner
+            gameDao.updateGame(resignCommand.getGameID(), gameData);
+
+            // Notify all clients that the game has ended due to resignation
+            String notification = playerName + " has resigned. " + winner + " wins the game.";
+            ServerMessage.NotificationMessage notificationMessage =
+                    new ServerMessage.NotificationMessage(notification);
+            connectionManager.broadcast(resignCommand.getGameID(), null, notificationMessage);
+
+        } catch (Exception e) {
+            sendErrorMessage(session, "Error processing resignation: " + e.getMessage());
+        }
     }
+
 
     private void sendErrorMessage(Session session, String errorMessage) {
         try {

@@ -20,7 +20,7 @@ public class WebSocketClient extends Endpoint {
 
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-
+        this.session = session;
     }
 
     // Define an interface for handling incoming messages
@@ -48,16 +48,16 @@ public class WebSocketClient extends Endpoint {
         this.session = container.connectToServer(this, uri);
     }
 
-    @OnWebSocketConnect
-    public void onOpen(Session session) {
-        this.session = session;
-    }
+//    @OnWebSocketConnect
+//    public void onOpen(Session session) {
+//        this.session = session;
+//    }
 
 //    @OnMessage
 //    public void onMessage(ServerMessage message) {
 //        messageHandler.handleServerMessage(message);
 //    }
-    @OnWebSocketMessage
+    @OnMessage
     public void onMessage(String messageJson, Session session) {
         ServerMessage serverMessage = gson.fromJson(messageJson, ServerMessage.class);
         System.out.println("Raw JSON received: " + messageJson); // Debug print the received JSON
@@ -73,9 +73,10 @@ public class WebSocketClient extends Endpoint {
     }
 
     // Close the WebSocket connection
-    @OnWebSocketClose
+    @OnClose
     public void closeConnection() throws IOException {
-        this.session.close();
+//        this.session.close();
+        this.session = null;
     }
 
 

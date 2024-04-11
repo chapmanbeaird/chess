@@ -120,7 +120,16 @@ public class ChessWebSocketHandler {
             // Send the updated game state to the player
             GameData updatedGame = gameDao.getGame(joinCommand.getGameID());
             if (updatedGame != null) {
-                session.getRemote().sendString(gson.toJson(new LoadGameMessage(updatedGame.game())));
+                ChessGame game = updatedGame.game();
+                if (game != null && game.getBoard() != null) {
+                    System.out.println("Game and board are correctly loaded. Game ID: " + joinCommand.getGameID());
+                } else {
+                    System.err.println("Game or board is null. Game ID: " + joinCommand.getGameID());
+                }
+                String json = gson.toJson(new LoadGameMessage(game));
+                System.out.println("Serialized game state to send: " + json);
+                session.getRemote().sendString(json);
+//                session.getRemote().sendString(gson.toJson(new LoadGameMessage(updatedGame.game())));
                 NotificationMessage notificationMessage =
                         new NotificationMessage(playerName + " joined as " + joinCommand.getPlayerColor());
 

@@ -1,6 +1,10 @@
 package Websocket;
 
 import com.google.gson.Gson;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 
@@ -8,7 +12,7 @@ import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-
+@WebSocket
 public class WebSocketClient extends Endpoint {
 
     private Session session;
@@ -45,14 +49,22 @@ public class WebSocketClient extends Endpoint {
         this.session = container.connectToServer(this, uri);
     }
 
-    @OnOpen
+    @OnWebSocketConnect
     public void onOpen(Session session) {
         this.session = session;
     }
 
-    @OnMessage
-    public void onMessage(ServerMessage message) {
-        messageHandler.handleServerMessage(message);
+//    @OnMessage
+//    public void onMessage(ServerMessage message) {
+//        messageHandler.handleServerMessage(message);
+//    }
+    @OnWebSocketMessage
+    public void onMessage(String messageJson, Session session) {
+        ServerMessage serverMessage = gson.fromJson(messageJson, ServerMessage.class);
+        System.out.println("Raw JSON received: " + messageJson); // Debug print the received JSON
+        serverMessage.setRawJson(messageJson);
+        System.out.println("ServerMessage after setting rawJson: " + serverMessage.getRawJson()); // Verify that rawJson is set
+        this.messageHandler.handleServerMessage(serverMessage);
     }
 
     // Send a UserGameCommand to the server
@@ -62,7 +74,7 @@ public class WebSocketClient extends Endpoint {
     }
 
     // Close the WebSocket connection
-    @OnClose
+    @OnWebSocketClose
     public void closeConnection() throws IOException {
         this.session.close();
     }

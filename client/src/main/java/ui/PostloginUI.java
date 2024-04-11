@@ -119,10 +119,6 @@ public class PostloginUI {
 
         }
         try {
-            GameData gameData = serverFacade.joinGame(gameId, color, authToken);
-            WebSocketClient.ChessMessageHandler handler = new ClientChessMessageHandler();
-            String wsUrl = "ws://localhost:8080";
-            WebSocketClient webSocketClient = new WebSocketClient(wsUrl, handler);
             JoinPlayerCommand joinCommand;
             boolean isPlayerWhite;
             if (color == "WHITE"){
@@ -134,10 +130,15 @@ public class PostloginUI {
                 isPlayerWhite = false;
 
             }
+
+            GameData gameData = serverFacade.joinGame(gameId, color, authToken);
+            GameplayUI gameplayUI = new GameplayUI(serverFacade, authToken, gameId, isPlayerWhite);
+            WebSocketClient.ChessMessageHandler handler = new ClientChessMessageHandler(gameplayUI);
+            String wsUrl = "ws://localhost:8080";
+            WebSocketClient webSocketClient = new WebSocketClient(wsUrl, handler);
             webSocketClient.sendUserGameCommand(joinCommand);
             System.out.println("Joined game " + gameId + " as " + color);
-            PrintBoard.printChessBoards();
-            GameplayUI gameplayUI = new GameplayUI(serverFacade, authToken, gameId, isPlayerWhite);
+            PrintBoard.printStartingChessBoards();
             gameplayUI.displayMenu();
 
         } catch (ServerFacade.ServerFacadeException e) {
@@ -191,9 +192,10 @@ public class PostloginUI {
 
         try {
             GameData gameData = serverFacade.joinGameAsObserver(gameId, authToken);
+            GameplayUI gameplayUI = new GameplayUI(serverFacade, authToken, gameId, false);
 
             // Initialize WebSocket connection for observing the game
-            WebSocketClient.ChessMessageHandler handler = new ClientChessMessageHandler();
+            WebSocketClient.ChessMessageHandler handler = new ClientChessMessageHandler(gameplayUI);
             String wsUrl = "ws://localhost:8080";
             WebSocketClient webSocketClient = new WebSocketClient(wsUrl, handler);
 
@@ -202,7 +204,7 @@ public class PostloginUI {
             webSocketClient.sendUserGameCommand(joinObserverCommand);
 
             System.out.println("Now observing game " + gameId);
-            PrintBoard.printChessBoards();
+            PrintBoard.printStartingChessBoards();
 
         } catch (ServerFacade.ServerFacadeException e) {
             System.err.println("Error joining game as observer: " + e.getMessage());

@@ -1,8 +1,11 @@
 package ui;
 
+import chess.ChessBoard;
+import chess.ChessPiece;
+
 public class PrintBoard {
 
-    public static void printChessBoards() {
+    public static void printStartingChessBoards() {
         String[][] board = new String[8][8];
 
         // Initialize the board with empty squares
@@ -26,6 +29,60 @@ public class PrintBoard {
         printBoard(board);
         System.out.flush();
 
+    }
+
+    public static void printCurrBoard(ChessBoard chessBoard) {
+        String[][] boardVisual = new String[8][8];
+        ChessPiece[][] board = chessBoard.getBoard();
+
+        // Initialize the boardVisual with empty squares
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                boardVisual[i][j] = EscapeSequences.EMPTY;
+            }
+        }
+
+        // Populate the boardVisual array based on the ChessBoard state
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = board[row][col];
+                if (piece != null) {
+                    // Convert the ChessPiece to its corresponding symbol
+                    boardVisual[row][col] = pieceToSymbol(piece);
+                }
+            }
+        }
+
+        printBoard(boardVisual);
+    }
+
+    private static String pieceToSymbol(ChessPiece piece) {
+        if (piece == null) {
+            return EscapeSequences.EMPTY;
+        }
+        switch (piece.getTeamColor()) {
+            case WHITE:
+                switch (piece.getPieceType()) {
+                    case PAWN: return EscapeSequences.WHITE_PAWN;
+                    case ROOK: return EscapeSequences.WHITE_ROOK;
+                    case KNIGHT: return EscapeSequences.WHITE_KNIGHT;
+                    case BISHOP: return EscapeSequences.WHITE_BISHOP;
+                    case QUEEN: return EscapeSequences.WHITE_QUEEN;
+                    case KING: return EscapeSequences.WHITE_KING;
+                    default: return "?";
+                }
+            case BLACK:
+                switch (piece.getPieceType()) {
+                    case PAWN: return EscapeSequences.BLACK_PAWN;
+                    case ROOK: return EscapeSequences.BLACK_ROOK;
+                    case KNIGHT: return EscapeSequences.BLACK_KNIGHT;
+                    case BISHOP: return EscapeSequences.BLACK_BISHOP;
+                    case QUEEN: return EscapeSequences.BLACK_QUEEN;
+                    case KING: return EscapeSequences.BLACK_KING;
+                    default: return "?";
+                }
+            default: return "?";
+        }
     }
 
     private static void setupChessBoard(String[][] board, boolean whiteAtBottom) {

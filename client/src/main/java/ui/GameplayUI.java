@@ -1,6 +1,7 @@
 package ui;
 
 import ServerFacade.ServerFacade;
+import chess.ChessBoard;
 
 import java.util.List;
 import java.util.Scanner;
@@ -11,6 +12,7 @@ public class GameplayUI {
     private String authToken;
     private int gameId;
     private boolean isPlayerWhite;
+    private ChessBoard currentBoard;
 
     public GameplayUI(ServerFacade serverFacade, String authToken, int gameId, boolean isPlayerWhite) {
         this.serverFacade = serverFacade;
@@ -59,7 +61,21 @@ public class GameplayUI {
     }
 
     private void redrawChessBoard() {
+        if (currentBoard != null) {
+            PrintBoard.printCurrBoard(currentBoard);
+        } else {
+            System.out.println("The board is not available.");
+        }
+    }
 
+    public void updateGame(ChessBoard board){
+        if (board != null) {
+            this.currentBoard = board;
+            System.out.println("Game board updated. Redrawing...");
+            redrawChessBoard();
+        } else {
+            System.err.println("Attempted to update with null board.");
+        }
     }
 
     private void makeMove() {

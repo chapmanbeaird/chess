@@ -10,6 +10,7 @@ import java.util.Objects;
  */
 public class ServerMessage {
     ServerMessageType serverMessageType;
+    private String rawJson;
 
     public enum ServerMessageType {
         LOAD_GAME,
@@ -23,6 +24,13 @@ public class ServerMessage {
 
     public ServerMessageType getServerMessageType() {
         return this.serverMessageType;
+    }
+
+    public void setRawJson(String rawJson) {
+        this.rawJson = rawJson;
+    }
+    public String getRawJson(){
+        return rawJson;
     }
 
     @Override

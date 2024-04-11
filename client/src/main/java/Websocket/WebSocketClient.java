@@ -1,9 +1,6 @@
 package Websocket;
 
 import com.google.gson.Gson;
-//import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-//import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
-//import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.UserGameCommand;
 

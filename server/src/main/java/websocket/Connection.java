@@ -1,6 +1,6 @@
 package websocket;
+
 import org.eclipse.jetty.websocket.api.Session;
-import java.io.IOException;
 
 public class Connection {
     public Integer gameID;
@@ -12,9 +12,5 @@ public class Connection {
         this.gameID = gameID;
         this.session = session;
         this.playerName = playerName;
-    }
-
-    public void send(String msg) throws IOException {
-        session.getRemote().sendString(msg);
     }
 }

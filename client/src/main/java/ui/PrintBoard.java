@@ -123,7 +123,7 @@ public class PrintBoard {
         String lightSquare = EscapeSequences.SET_BG_COLOR_LIGHT_GREY;
         String darkSquare = EscapeSequences.SET_BG_COLOR_DARK_GREY;
         String resetColor = EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
-
+        System.out.println();
         // Add the column letters before the board
         System.out.print("  ");
         for (char col = 'A'; col <= 'H'; col++) {

@@ -46,6 +46,7 @@ public class GameplayUI {
             System.out.println("6. Help");
             System.out.print("Select an option: ");
             String option = scanner.nextLine();
+            System.out.println();
 
             switch (option) {
                 case "1":
@@ -83,7 +84,7 @@ public class GameplayUI {
     public void updateGame(ChessBoard board){
         if (board != null) {
             this.currentBoard = board;
-            System.out.println("Game board updated. Redrawing...");
+            //System.out.println("Game board updated. Redrawing...");
             redrawChessBoard();
         } else {
             System.err.println("Attempted to update with null board.");

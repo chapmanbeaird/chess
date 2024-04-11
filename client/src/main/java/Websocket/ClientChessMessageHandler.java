@@ -23,7 +23,7 @@ public class ClientChessMessageHandler implements WebSocketClient.ChessMessageHa
     }
     @Override
     public void handleServerMessage(ServerMessage message) {
-        System.out.println("Received message type: " + message.getServerMessageType());
+//        System.out.println("Received message type: " + message.getServerMessageType());
         // Check that rawJson is not null
         if (message.getRawJson() == null) {
             System.err.println("Raw JSON string is null. Cannot deserialize.");
@@ -33,7 +33,7 @@ public class ClientChessMessageHandler implements WebSocketClient.ChessMessageHa
             case LOAD_GAME:
                 // Update your client's game state or UI with the new game data
                 LoadGameMessage loadGameMessage = gson.fromJson(message.getRawJson(), LoadGameMessage.class); // Deserialize JSON into LoadGameMessage
-                System.out.println("LoadGameMessage received. Updating game state...");
+//                System.out.println("LoadGameMessage received. Updating game state...");
                 ChessGame game = loadGameMessage.getGame();
                 updateGame(game);
                 break;
@@ -52,7 +52,7 @@ public class ClientChessMessageHandler implements WebSocketClient.ChessMessageHa
 
     private void updateGame(ChessGame game) {
         if (game != null && game.getBoard() != null) {
-            System.out.println("Updating GameplayUI with new board.");
+//            System.out.println("Updating GameplayUI with new board.");
             gameplayUI.updateGame(game.getBoard());
         } else {
             System.err.println("Received game or board is null.");

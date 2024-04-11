@@ -39,7 +39,6 @@ public class ChessWebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
         try {
-//            UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
             JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
             String commandType = jsonObject.get("commandType").getAsString();
             UserGameCommand command = null;
@@ -82,8 +81,6 @@ public class ChessWebSocketHandler {
     @OnWebSocketClose
     public void onClose(Session session, int statusCode, String reason) {
          //remove player from connection
-//        ChessConnectionManager manager = new ChessConnectionManager();
-//        manager.remove(session);
         System.out.println("Connection closed: " + session.getRemoteAddress().getAddress() + ", Reason: " + reason);
     }
 
@@ -127,7 +124,7 @@ public class ChessWebSocketHandler {
                     System.err.println("Game or board is null. Game ID: " + joinCommand.getGameID());
                 }
                 String json = gson.toJson(new LoadGameMessage(game));
-                System.out.println("Serialized game state to send: " + json);
+//                System.out.println("Serialized game state to send: " + json);
                 session.getRemote().sendString(json);
 //                session.getRemote().sendString(gson.toJson(new LoadGameMessage(updatedGame.game())));
                 NotificationMessage notificationMessage =
@@ -135,6 +132,7 @@ public class ChessWebSocketHandler {
 
                 // Broadcast to all participants in the game, except the joining player
                 connectionManager.broadcast(joinCommand.getGameID(), playerName, notificationMessage);
+                System.out.println("Notification sent: " + notificationMessage.getMessage());
             } else {
                 sendErrorMessage(session, "Error: Game not found.");
             }

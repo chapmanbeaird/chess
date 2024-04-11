@@ -37,9 +37,9 @@ public class WebSocketClient extends Endpoint {
             @Override
             public void onMessage(String message){
                 ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
-                System.out.println("Raw JSON received: " + message); // Debug print the received JSON
+                //System.out.println("Raw JSON received: " + message); // Debug print the received JSON
                 serverMessage.setRawJson(message);
-                System.out.println("ServerMessage after setting rawJson: " + serverMessage.getRawJson()); // Verify that rawJson is set
+                //System.out.println("ServerMessage after setting rawJson: " + serverMessage.getRawJson()); // Verify that rawJson is set
                 messageHandler.handleServerMessage(serverMessage);
         }
         });

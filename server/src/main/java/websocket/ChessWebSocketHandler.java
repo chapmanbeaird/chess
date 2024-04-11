@@ -69,7 +69,7 @@ public class ChessWebSocketHandler {
                     handleResign(session, command);
                     break;
                 default:
-                    sendErrorMessage(session, "Unrecognized command type.");
+                    sendErrorMessage(session, "Error: Unrecognized command type.");
                     break;
             }
         } catch (Exception e) {
@@ -93,7 +93,7 @@ public class ChessWebSocketHandler {
     private void handleJoinPlayer(Session session, UserGameCommand command) throws DataAccessException {
 
         if (!(command instanceof JoinPlayerCommand)) {
-            sendErrorMessage(session, "Invalid command data for joining as a player.");
+            sendErrorMessage(session, "Error: Invalid command data for joining as a player.");
             return;
         }
 
@@ -108,12 +108,12 @@ public class ChessWebSocketHandler {
            // Check if the spot is correct
             if (joinCommand.getPlayerColor() == ChessGame.TeamColor.WHITE) {
                 if (!gameData.whiteUsername().equals(playerName)) {
-                    sendErrorMessage(session, "White spot is already taken.");
+                    sendErrorMessage(session, "Error: White spot is already taken.");
                     return;
                 }
             } else if (joinCommand.getPlayerColor() == ChessGame.TeamColor.BLACK) {
                 if (!gameData.blackUsername().equals(playerName)) {
-                    sendErrorMessage(session, "Black spot is already taken.");
+                    sendErrorMessage(session, "Error: Black spot is already taken.");
                     return;
                 }
             }
@@ -130,7 +130,7 @@ public class ChessWebSocketHandler {
                 // Broadcast to all participants in the game, except the joining player
                 connectionManager.broadcast(joinCommand.getGameID(), playerName, notificationMessage);
             } else {
-                sendErrorMessage(session, "Game not found.");
+                sendErrorMessage(session, "Error: Game not found.");
             }
         } catch (Exception e) {
             sendErrorMessage(session, "Error processing join game: " + e.getMessage());
@@ -138,23 +138,34 @@ public class ChessWebSocketHandler {
     }
     private void handleJoinObserver(Session session, UserGameCommand command) throws DataAccessException {
         if (!(command instanceof JoinObserverCommand)) {
-            sendErrorMessage(session, "Invalid command data for joining as an observer.");
+            sendErrorMessage(session, "Error: Invalid command data for joining as an observer.");
             return;
         }
 
         JoinObserverCommand joinCommand = (JoinObserverCommand) command;
         String authtoken = joinCommand.getAuthString();
         String observerName = authDao.getUsername(authtoken);
-
+        GameData gameData = gameDao.getGame(joinCommand.getGameID());
+        if (gameData == null){
+            sendErrorMessage(session, "Error: Game not found. Invalid Game ID");
+            return;
+        }
+        if (observerName == null){
+            sendErrorMessage(session, "Error: user not found. Bad authtoken");
+            return;
+        }
         try {
             // Add observer to the session manager
             connectionManager.add(joinCommand.getGameID(), session, observerName);
-
-            // Broadcast to all participants in the game, including the new observer
-            NotificationMessage notificationMessage =
-                    new NotificationMessage(observerName + " is now observing the game.");
-            connectionManager.broadcast(joinCommand.getGameID(), observerName, notificationMessage);
-
+            // Send the updated game state to the player
+            GameData updatedGame = gameDao.getGame(joinCommand.getGameID());
+            if (updatedGame != null) {
+                session.getRemote().sendString(gson.toJson(new LoadGameMessage(updatedGame.game())));
+                // Broadcast to all participants in the game, including the new observer
+                NotificationMessage notificationMessage =
+                        new NotificationMessage(observerName + " is now observing the game.");
+                connectionManager.broadcast(joinCommand.getGameID(), observerName, notificationMessage);
+            }
         } catch (Exception e) {
             sendErrorMessage(session, "Error processing join observer: " + e.getMessage());
         }
@@ -163,7 +174,7 @@ public class ChessWebSocketHandler {
 
     private void handleMakeMove(Session session, UserGameCommand command) throws DataAccessException {
         if (!(command instanceof MakeMoveCommand)) {
-            sendErrorMessage(session, "Invalid command data for making a move.");
+            sendErrorMessage(session, "Error: Invalid command data for making a move.");
             return;
         }
 
@@ -175,7 +186,7 @@ public class ChessWebSocketHandler {
             // Retrieve the game data
             GameData gameData = gameDao.getGame(moveCommand.getGameID());
             if (gameData == null) {
-                sendErrorMessage(session, "Game not found.");
+                sendErrorMessage(session, "Error: Game not found.");
                 return;
             }
 
@@ -185,7 +196,7 @@ public class ChessWebSocketHandler {
 
             // Check if it's the correct player's turn
             if (!game.getTeamTurn().toString().equals(playerName)) {
-                sendErrorMessage(session, "It's not your turn.");
+                sendErrorMessage(session, "Error: It's not your turn.");
                 return;
             }
 
@@ -193,7 +204,7 @@ public class ChessWebSocketHandler {
             try {
                 game.makeMove(move);
             } catch (InvalidMoveException e) {
-                sendErrorMessage(session, "Invalid move: " + e.getMessage());
+                sendErrorMessage(session, "Error: Invalid move: " + e.getMessage());
                 return;
             }
 
@@ -208,7 +219,7 @@ public class ChessWebSocketHandler {
             // Prepare the notification message
             ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
             if (piece == null) {
-                sendErrorMessage(session, "No piece at start position.");
+                sendErrorMessage(session, "Error: No piece at start position.");
                 return;
             }
             String moveMessage = playerName + " moved " + piece +
@@ -236,7 +247,7 @@ public class ChessWebSocketHandler {
 
     private void handleLeave(Session session, UserGameCommand command) throws DataAccessException {
         if (!(command instanceof LeaveCommand)) {
-            sendErrorMessage(session, "Invalid command data for leaving the game.");
+            sendErrorMessage(session, "Error: Invalid command data for leaving the game.");
             return;
         }
 
@@ -261,7 +272,7 @@ public class ChessWebSocketHandler {
 
     private void handleResign(Session session, UserGameCommand command) throws DataAccessException {
         if (!(command instanceof ResignCommand)) {
-            sendErrorMessage(session, "Invalid command data for resigning from the game.");
+            sendErrorMessage(session, "Error: Invalid command data for resigning from the game.");
             return;
         }
 
@@ -273,7 +284,7 @@ public class ChessWebSocketHandler {
             // Handle the resignation in the game logic
             GameData gameData = gameDao.getGame(resignCommand.getGameID());
             if (gameData == null) {
-                sendErrorMessage(session, "Game not found.");
+                sendErrorMessage(session, "Error: Game not found.");
                 return;
             }
 

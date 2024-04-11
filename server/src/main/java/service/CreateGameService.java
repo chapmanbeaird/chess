@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessBoard;
 import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
@@ -21,7 +22,11 @@ public class CreateGameService {
         }
 
         int gameId = generateGameId();
-        GameData newGame = new GameData(gameId, null, null, gameName, new ChessGame());
+        ChessGame game = new ChessGame();
+        ChessBoard board = game.getBoard();
+        board.resetBoard();
+        game.setBoard(board);
+        GameData newGame = new GameData(gameId, null, null, gameName, game);
 
         gameDAO.createGame(newGame);
         return newGame;

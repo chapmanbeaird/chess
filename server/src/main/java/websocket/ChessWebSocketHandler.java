@@ -1,9 +1,6 @@
 package websocket;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.InvalidMoveException;
+import chess.*;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -180,23 +177,44 @@ public class ChessWebSocketHandler {
 
         MakeMoveCommand moveCommand = (MakeMoveCommand) command;
         String authtoken = moveCommand.getAuthString();
-        String playerName = authDao.getUsername(authtoken);
+        String playerName;
+        try {
+            playerName = authDao.getUsername(authtoken);
+        } catch (Exception e) {
+            sendErrorMessage(session, "Error: Failed to authenticate user.");
+            return;
+        }
 
+        GameData gameData;
         try {
             // Retrieve the game data
-            GameData gameData = gameDao.getGame(moveCommand.getGameID());
+            gameData = gameDao.getGame(moveCommand.getGameID());
             if (gameData == null) {
                 sendErrorMessage(session, "Error: Game not found.");
+                return;
+            }
+
+            // Check if the game is already over
+            if (gameData.game().isGameOver()) {
+                sendErrorMessage(session, "Error: This game is already over. No further moves can be made.");
                 return;
             }
 
             // Get the current game state and the player's move
             ChessGame game = gameData.game();
             ChessMove move = moveCommand.getMove();
+            ChessBoard board = game.getBoard();
+            ChessPiece piece = board.getPiece(move.getStartPosition());
+            if (piece == null) {
+                sendErrorMessage(session, "Error: No piece at start position.");
+                return;
+            }
 
-            // Check if it's the correct player's turn
-            if (!game.getTeamTurn().toString().equals(playerName)) {
-                sendErrorMessage(session, "Error: It's not your turn.");
+            // Determine if the player is trying to move their own piece
+            boolean isPlayerWhite = playerName.equals(gameData.whiteUsername());
+            boolean isPieceWhite = piece.getTeamColor() == ChessGame.TeamColor.WHITE;
+            if (isPlayerWhite != isPieceWhite) { // If the player and piece colors don't match
+                sendErrorMessage(session, "Error: You cannot move your opponent's pieces.");
                 return;
             }
 
@@ -205,6 +223,9 @@ public class ChessWebSocketHandler {
                 game.makeMove(move);
             } catch (InvalidMoveException e) {
                 sendErrorMessage(session, "Error: Invalid move: " + e.getMessage());
+                return;
+            } catch (Exception e) {
+                sendErrorMessage(session, "Error processing make move: " + e.getMessage());
                 return;
             }
 
@@ -217,11 +238,6 @@ public class ChessWebSocketHandler {
             gameDao.updateGame(moveCommand.getGameID(), updatedGameData);
 
             // Prepare the notification message
-            ChessPiece piece = game.getBoard().getPiece(move.getStartPosition());
-            if (piece == null) {
-                sendErrorMessage(session, "Error: No piece at start position.");
-                return;
-            }
             String moveMessage = playerName + " moved " + piece +
                     " from " + move.getStartPosition() + " to " + move.getEndPosition();
             if (checkmate) {
@@ -232,11 +248,11 @@ public class ChessWebSocketHandler {
 
             // Broadcast the move and game state to all participants
             LoadGameMessage loadGameMessage = new LoadGameMessage(gameData.game());
-            connectionManager.broadcast(moveCommand.getGameID(), playerName, loadGameMessage);
+            connectionManager.broadcast(moveCommand.getGameID(), null, loadGameMessage);
 
             NotificationMessage notificationMessage =
                     new NotificationMessage(moveMessage);
-            connectionManager.broadcast(moveCommand.getGameID(), null, notificationMessage);
+            connectionManager.broadcast(moveCommand.getGameID(), playerName, notificationMessage);
 
         } catch (Exception e) {
             sendErrorMessage(session, "Error processing make move: " + e.getMessage());
@@ -278,7 +294,13 @@ public class ChessWebSocketHandler {
 
         ResignCommand resignCommand = (ResignCommand) command;
         String authtoken = resignCommand.getAuthString();
-        String playerName = authDao.getUsername(authtoken);
+        String playerName;
+        try {
+            playerName = authDao.getUsername(authtoken);
+        } catch (Exception e) {
+            sendErrorMessage(session, "Error: Failed to authenticate user.");
+            return;
+        }
 
         try {
             // Handle the resignation in the game logic
@@ -287,26 +309,25 @@ public class ChessWebSocketHandler {
                 sendErrorMessage(session, "Error: Game not found.");
                 return;
             }
-
-            // Determine the team color of the resigning player
-            ChessGame.TeamColor resigningTeam = null;
-            if (gameData.whiteUsername().equals(playerName)) {
-                resigningTeam = ChessGame.TeamColor.WHITE;
-            } else if (gameData.blackUsername().equals(playerName)) {
-                resigningTeam = ChessGame.TeamColor.BLACK;
+            // Check if the player trying to resign is actually a player in the game
+            if (!playerName.equals(gameData.whiteUsername()) && !playerName.equals(gameData.blackUsername())) {
+                // The client trying to resign is not a player (thus, an observer or unauthenticated user)
+                sendErrorMessage(session, "Error: Only players participating in the game can resign.");
+                return;
             }
+            // Mark the game as over due to resignation and determine the winner
+            ChessGame game = gameData.game();
+            ChessGame.TeamColor resigningTeam = gameData.whiteUsername().equals(playerName) ? ChessGame.TeamColor.WHITE : ChessGame.TeamColor.BLACK;
 
-            // Resign the game
-            gameData.game().resign(resigningTeam);
-            String winner = gameData.game().getWinner();
+            game.resign(resigningTeam); // This marks the game as over and sets the winner
+            String winner = game.getWinner();
 
-            // Persist the updated game state and winner
+            // Update the game in the database
             gameDao.updateGame(resignCommand.getGameID(), gameData);
 
-            // Notify all clients that the game has ended due to resignation
+            // Notify all clients (players and observers) about the resignation
             String notification = playerName + " has resigned. " + winner + " wins the game.";
-            NotificationMessage notificationMessage =
-                    new NotificationMessage(notification);
+            NotificationMessage notificationMessage = new NotificationMessage(notification);
             connectionManager.broadcast(resignCommand.getGameID(), null, notificationMessage);
 
         } catch (Exception e) {

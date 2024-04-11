@@ -1,5 +1,6 @@
 package ServerFacade;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import model.AuthData;
 import model.GameData;
@@ -134,7 +135,7 @@ public class ServerFacade {
         }
     }
 
-    public void makeMove(int gameId, String move, String authToken) {
+    public void makeMove(int gameId, ChessMove move, String authToken) {
     }
 
     public void resignGame(int gameId, String authToken) {
@@ -164,9 +165,7 @@ public class ServerFacade {
             return games;
         }
 
-        public void setGames(List<GameData> games) {
-            this.games = games;
-        }
+
     }
 
 

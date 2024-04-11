@@ -36,34 +36,21 @@ public class WebSocketClient extends Endpoint {
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, socketURI);
 
-        this.session.addMessageHandler(String.class, (message) -> {
-            ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
-            this.messageHandler.handleServerMessage(serverMessage);
+        this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+            @Override
+            public void onMessage(String message){
+                ServerMessage serverMessage = gson.fromJson(message, ServerMessage.class);
+                System.out.println("Raw JSON received: " + message); // Debug print the received JSON
+                serverMessage.setRawJson(message);
+                System.out.println("ServerMessage after setting rawJson: " + serverMessage.getRawJson()); // Verify that rawJson is set
+                messageHandler.handleServerMessage(serverMessage);
+        }
         });
     }
-
     private void connectToServer() throws URISyntaxException, DeploymentException, IOException {
         URI uri = new URI("ws://localhost:8080/connect");
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
         this.session = container.connectToServer(this, uri);
-    }
-
-//    @OnWebSocketConnect
-//    public void onOpen(Session session) {
-//        this.session = session;
-//    }
-
-//    @OnMessage
-//    public void onMessage(ServerMessage message) {
-//        messageHandler.handleServerMessage(message);
-//    }
-    @OnMessage
-    public void onMessage(String messageJson, Session session) {
-        ServerMessage serverMessage = gson.fromJson(messageJson, ServerMessage.class);
-        System.out.println("Raw JSON received: " + messageJson); // Debug print the received JSON
-        serverMessage.setRawJson(messageJson);
-        System.out.println("ServerMessage after setting rawJson: " + serverMessage.getRawJson()); // Verify that rawJson is set
-        this.messageHandler.handleServerMessage(serverMessage);
     }
 
     // Send a UserGameCommand to the server
@@ -71,13 +58,5 @@ public class WebSocketClient extends Endpoint {
         String message = gson.toJson(command);
         this.session.getBasicRemote().sendText(message);
     }
-
-    // Close the WebSocket connection
-    @OnClose
-    public void closeConnection() throws IOException {
-//        this.session.close();
-        this.session = null;
-    }
-
 
 }

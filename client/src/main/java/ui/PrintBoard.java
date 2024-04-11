@@ -124,8 +124,15 @@ public class PrintBoard {
         String darkSquare = EscapeSequences.SET_BG_COLOR_DARK_GREY;
         String resetColor = EscapeSequences.RESET_TEXT_COLOR + EscapeSequences.RESET_BG_COLOR;
 
+        // Add the column letters before the board
+        System.out.print("  ");
+        for (char col = 'A'; col <= 'H'; col++) {
+            System.out.print(" " + col + " ");
+        }
+        System.out.println(); // Move to the next line after printing column letters
 
         for (int row = 0; row < board.length; row++) {
+            System.out.print((8 - row) + " ");
             for (int col = 0; col < board[row].length; col++) {
                 // Alternate the background color
                 String bgColor = ((row + col) % 2 == 0) ? lightSquare : darkSquare;
@@ -149,14 +156,17 @@ public class PrintBoard {
                 }
                 System.out.print(bgColor + fgColor + piece + EscapeSequences.RESET_ALL);
             }
-            System.out.println(EscapeSequences.RESET_ALL);
+            System.out.println(EscapeSequences.RESET_ALL + " " + (8 - row));
 
         }
+        // Add the column letters again at the bottom of the board
+        System.out.print("  "); // Offset for row numbers
+        for (char col = 'A'; col <= 'H'; col++) {
+            System.out.print(" " + col + " ");
+        }
+        System.out.println(); // Move to the next line after printing column letters
         // Reset colors after the board is printed
         System.out.println(EscapeSequences.RESET_ALL);
     }
-
-
-
 
 }

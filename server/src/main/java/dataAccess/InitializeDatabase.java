@@ -8,9 +8,9 @@ import java.sql.Statement;
 import java.util.Properties;
 
 public class InitializeDatabase {
-    private static String JDBC_URL;
-    private static String USERNAME;
-    private static String PASSWORD;
+    private static String jdbcUrl;
+    private static String username;
+    private static String password;
 
     // SQL statements to create tables if they do not exist
     private static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS users (" +
@@ -46,9 +46,9 @@ public class InitializeDatabase {
             String port = prop.getProperty("db.port");
             String name = prop.getProperty("db.name");
 
-            JDBC_URL = "jdbc:mysql://" + host + ":" + port + "/" + name;
-            USERNAME = prop.getProperty("db.user");
-            PASSWORD = prop.getProperty("db.password");
+            jdbcUrl = "jdbc:mysql://" + host + ":" + port + "/" + name;
+            username = prop.getProperty("db.user");
+            password = prop.getProperty("db.password");
         } catch (Exception e) {
             throw new RuntimeException("Failed to load database properties", e);
         }
@@ -60,7 +60,7 @@ public class InitializeDatabase {
         DatabaseManager.createDatabase();
 
         // Connect to the database and create tables
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, USERNAME, PASSWORD);
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
              Statement stmt = conn.createStatement()) {
             stmt.execute(CREATE_USERS_TABLE);
             stmt.execute(CREATE_GAMES_TABLE);

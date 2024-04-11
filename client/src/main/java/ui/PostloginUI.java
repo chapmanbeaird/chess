@@ -192,6 +192,7 @@ public class PostloginUI {
 
         try {
             GameData gameData = serverFacade.joinGameAsObserver(gameId, authToken);
+
             GameplayUI gameplayUI = new GameplayUI(serverFacade, authToken, gameId, false);
 
             // Initialize WebSocket connection for observing the game

@@ -5,6 +5,8 @@ import chess.ChessMove;
 import chess.ChessPiece;
 import chess.InvalidMoveException;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
@@ -29,6 +31,7 @@ public class ChessWebSocketHandler {
     private final AuthDAO authDao;
     private final ChessConnectionManager connectionManager = new ChessConnectionManager();
 
+
     public ChessWebSocketHandler(GameDAO gameDao, AuthDAO authDao) {
         this.gameDao = gameDao;
         this.authDao = authDao;
@@ -38,22 +41,30 @@ public class ChessWebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) {
         try {
-            UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
+//            UserGameCommand command = gson.fromJson(message, UserGameCommand.class);
+            JsonObject jsonObject = JsonParser.parseString(message).getAsJsonObject();
+            String commandType = jsonObject.get("commandType").getAsString();
+            UserGameCommand command = null;
 
-            switch (command.getCommandType()) {
-                case JOIN_PLAYER:
+            switch (commandType) {
+                case "JOIN_PLAYER":
+                    command = gson.fromJson(message, JoinPlayerCommand.class);
                     handleJoinPlayer(session, command);
                     break;
-                case JOIN_OBSERVER:
+                case "JOIN_OBSERVER":
+                    command = gson.fromJson(message, JoinObserverCommand.class);
                     handleJoinObserver(session, command);
                     break;
-                case MAKE_MOVE:
+                case "MAKE_MOVE":
+                    command = gson.fromJson(message, MakeMoveCommand.class);
                     handleMakeMove(session, command);
                     break;
-                case LEAVE:
+                case "LEAVE":
+                    command = gson.fromJson(message, LeaveCommand.class);
                     handleLeave(session, command);
                     break;
-                case RESIGN:
+                case "RESIGN":
+                    command = gson.fromJson(message, ResignCommand.class);
                     handleResign(session, command);
                     break;
                 default:
@@ -91,7 +102,6 @@ public class ChessWebSocketHandler {
         try {
             // Add player to the session manager
             connectionManager.add(joinCommand.getGameID(), session, playerName);
-
             // Send the updated game state to the player
             GameData updatedGame = gameDao.getGame(joinCommand.getGameID());
             if (updatedGame != null) {

@@ -1,9 +1,9 @@
 package websocket;
 
 import com.google.gson.Gson;
+import org.eclipse.jetty.websocket.api.Session;
 import webSocketMessages.serverMessages.ServerMessage;
 
-import org.eclipse.jetty.websocket.api.Session;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;

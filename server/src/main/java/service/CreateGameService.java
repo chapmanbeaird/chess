@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
 import model.GameData;
@@ -20,7 +21,7 @@ public class CreateGameService {
         }
 
         int gameId = generateGameId();
-        GameData newGame = new GameData(gameId, null, null, gameName, null);
+        GameData newGame = new GameData(gameId, null, null, gameName, new ChessGame());
 
         gameDAO.createGame(newGame);
         return newGame;

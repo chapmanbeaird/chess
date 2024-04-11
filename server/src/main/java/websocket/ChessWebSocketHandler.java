@@ -10,6 +10,7 @@ import com.google.gson.JsonParser;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.GameDAO;
+import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
@@ -99,7 +100,24 @@ public class ChessWebSocketHandler {
         JoinPlayerCommand joinCommand = (JoinPlayerCommand) command;
         String authtoken = joinCommand.getAuthString();
         String playerName = authDao.getUsername(authtoken);
+        GameData gameData = gameDao.getGame(joinCommand.getGameID());
+        AuthData authData = authDao.getAuthToken(authtoken);
+
+
         try {
+           // Check if the spot is correct
+            if (joinCommand.getPlayerColor() == ChessGame.TeamColor.WHITE) {
+                if (!gameData.whiteUsername().equals(playerName)) {
+                    sendErrorMessage(session, "White spot is already taken.");
+                    return;
+                }
+            } else if (joinCommand.getPlayerColor() == ChessGame.TeamColor.BLACK) {
+                if (!gameData.blackUsername().equals(playerName)) {
+                    sendErrorMessage(session, "Black spot is already taken.");
+                    return;
+                }
+            }
+
             // Add player to the session manager
             connectionManager.add(joinCommand.getGameID(), session, playerName);
             // Send the updated game state to the player
